@@ -1,0 +1,184 @@
+{
+    "_description": "VozACosa Instrument Definitions - JSON format for custom synthesizers",
+    "_version": "1.0",
+    "instruments": {
+        "piano_warm": {
+            "name": "Piano Cálido",
+            "category": "keyboard",
+            "type": "soundfont",
+            "soundfont": "GeneralUser_GS.sf2",
+            "bank": 0,
+            "preset": 0,
+            "description": "Piano acústico con tono cálido"
+        },
+        "synth_lead": {
+            "name": "Synth Lead",
+            "category": "synth",
+            "type": "wavetable",
+            "waveform": "sawtooth",
+            "envelope": {
+                "attack": 0.01,
+                "decay": 0.1,
+                "sustain": 0.7,
+                "release": 0.3
+            },
+            "filter": {
+                "type": "lowpass",
+                "cutoff": 2000,
+                "resonance": 0.5
+            },
+            "description": "Lead de synth clásico tipo 80s"
+        },
+        "synth_pad": {
+            "name": "Synth Pad",
+            "category": "synth",
+            "type": "wavetable",
+            "waveform": "sine",
+            "envelope": {
+                "attack": 0.5,
+                "decay": 0.2,
+                "sustain": 0.8,
+                "release": 1.0
+            },
+            "effects": {
+                "chorus": {
+                    "enabled": true,
+                    "depth": 0.5,
+                    "rate": 1.0
+                }
+            },
+            "description": "Pad atmosférico suave"
+        },
+        "bass_808": {
+            "name": "Bass 808",
+            "category": "bass",
+            "type": "wavetable",
+            "waveform": "sine",
+            "envelope": {
+                "attack": 0.001,
+                "decay": 0.3,
+                "sustain": 0.0,
+                "release": 0.5
+            },
+            "pitch_envelope": {
+                "enabled": true,
+                "amount": 12,
+                "decay": 0.05
+            },
+            "description": "Sub bass estilo 808"
+        },
+        "pluck": {
+            "name": "Pluck",
+            "category": "synth",
+            "type": "karplus_strong",
+            "damping": 0.5,
+            "brightness": 0.7,
+            "envelope": {
+                "attack": 0.001,
+                "decay": 0.5,
+                "sustain": 0.0,
+                "release": 0.3
+            },
+            "description": "Sonido de cuerda punteada (síntesis física)"
+        },
+        "strings_ensemble": {
+            "name": "Cuerdas",
+            "category": "strings",
+            "type": "soundfont",
+            "soundfont": "GeneralUser_GS.sf2",
+            "bank": 0,
+            "preset": 48,
+            "description": "Ensemble de cuerdas"
+        },
+        "flute": {
+            "name": "Flauta",
+            "category": "winds",
+            "type": "soundfont",
+            "soundfont": "GeneralUser_GS.sf2",
+            "bank": 0,
+            "preset": 73,
+            "description": "Flauta traversa"
+        },
+        "organ_rock": {
+            "name": "Órgano Rock",
+            "category": "keyboard",
+            "type": "additive",
+            "drawbars": [
+                8,
+                8,
+                8,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "percussion": true,
+            "vibrato": {
+                "enabled": true,
+                "depth": 0.3,
+                "rate": 6.0
+            },
+            "description": "Órgano Hammond B3 style"
+        }
+    },
+    "drum_kits": {
+        "acoustic": {
+            "name": "Batería Acústica",
+            "type": "soundfont",
+            "soundfont": "GeneralUser_GS.sf2",
+            "bank": 128,
+            "preset": 0,
+            "mapping": {
+                "kick": 36,
+                "snare": 38,
+                "hihat_closed": 42,
+                "hihat_open": 46,
+                "tom_low": 45,
+                "tom_mid": 47,
+                "tom_high": 50,
+                "crash": 49,
+                "ride": 51
+            }
+        },
+        "electronic": {
+            "name": "Drums Electrónicos",
+            "type": "samples",
+            "samples_dir": "samples/drums_electronic",
+            "mapping": {
+                "kick": "kick_808.wav",
+                "snare": "snare_trap.wav",
+                "hihat_closed": "hihat_closed.wav",
+                "hihat_open": "hihat_open.wav",
+                "clap": "clap.wav"
+            }
+        }
+    },
+    "categories": {
+        "keyboard": {
+            "icon": "🎹",
+            "color": "#3498db"
+        },
+        "synth": {
+            "icon": "🎛️",
+            "color": "#9b59b6"
+        },
+        "bass": {
+            "icon": "🔊",
+            "color": "#e74c3c"
+        },
+        "strings": {
+            "icon": "🎻",
+            "color": "#2ecc71"
+        },
+        "winds": {
+            "icon": "🎷",
+            "color": "#f39c12"
+        },
+        "drums": {
+            "icon": "🥁",
+            "color": "#e67e22"
+        }
+    }
+}

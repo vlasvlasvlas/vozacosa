@@ -1,0 +1,27 @@
+# Audio
+sounddevice>=0.4.6
+librosa>=0.10.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# SOTA Pitch Detection (CREPE)
+crepe>=0.0.13
+tensorflow>=2.12.0
+
+# MIDI
+pretty_midi>=0.2.10
+midiutil>=1.2.1
+
+# Síntesis
+pyfluidsynth>=1.3.2
+
+# Export
+pydub>=0.25.1
+
+# CLI Rich/Textual
+rich>=13.0.0
+textual>=0.40.0
+click>=8.1.0
+
+# Utils
+python-dotenv>=1.0.0
