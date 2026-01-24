@@ -1,0 +1,37 @@
+{
+  "id": "20260123_234519",
+  "created_at": "2026-01-23T23:45:19.183289",
+  "input_type": "upload",
+  "input_file": null,
+  "input_duration": 4.253333333333333,
+  "input_sample_rate": 22050,
+  "scale_name": null,
+  "scale_root": null,
+  "scale_detected": true,
+  "tolerance_cents": 25,
+  "detected_notes": [
+    {
+      "midi_note": 50,
+      "note_name": "D3",
+      "start_time": 0.84,
+      "duration": 3.41,
+      "velocity": 77,
+      "confidence": 0.8151873350143433,
+      "original_hz": 149.22173960716475,
+      "quantized_hz": 146.8323839587038,
+      "cents_deviation": 0
+    }
+  ],
+  "detected_tempo": 117.45383522727273,
+  "is_percussive": false,
+  "detected_key": "D major",
+  "output_dir": "sessions/20260123_234519",
+  "original_audio_file": "sessions/20260123_234519/original.wav",
+  "midi_file": null,
+  "synth_wav_file": null,
+  "synth_mp3_file": null,
+  "instrument_id": null,
+  "instrument_name": null,
+  "steps": [],
+  "status": "analyzed"
+}

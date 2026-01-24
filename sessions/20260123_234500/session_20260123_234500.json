@@ -1,0 +1,48 @@
+{
+  "id": "20260123_234500",
+  "created_at": "2026-01-23T23:45:00.093709",
+  "input_type": "upload",
+  "input_file": null,
+  "input_duration": 4.666666666666667,
+  "input_sample_rate": 22050,
+  "scale_name": null,
+  "scale_root": null,
+  "scale_detected": true,
+  "tolerance_cents": 25,
+  "detected_notes": [
+    {
+      "midi_note": 76,
+      "note_name": "E5",
+      "start_time": 0.31,
+      "duration": 0.10999999999999999,
+      "velocity": 50,
+      "confidence": 0.23638185858726501,
+      "original_hz": 654.0234030527187,
+      "quantized_hz": 659.2551138257398,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 51,
+      "note_name": "D#3",
+      "start_time": 0.51,
+      "duration": 4.15,
+      "velocity": 73,
+      "confidence": 0.755142092704773,
+      "original_hz": 159.09020991867735,
+      "quantized_hz": 155.56349186104046,
+      "cents_deviation": 0
+    }
+  ],
+  "detected_tempo": 99.38401442307692,
+  "is_percussive": false,
+  "detected_key": "D# minor",
+  "output_dir": "sessions/20260123_234500",
+  "original_audio_file": "sessions/20260123_234500/original.wav",
+  "midi_file": null,
+  "synth_wav_file": null,
+  "synth_mp3_file": null,
+  "instrument_id": null,
+  "instrument_name": null,
+  "steps": [],
+  "status": "analyzed"
+}

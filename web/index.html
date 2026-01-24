@@ -155,6 +155,21 @@
             color: var(--text-secondary);
             margin-bottom: 1rem;
         }
+        
+        /* Welcome box */
+        .welcome-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-box h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
 
         /* Record section */
         .record-container {
@@ -358,16 +373,34 @@
             border-radius: 12px;
             padding: 1rem;
             display: grid;
-            grid-template-columns: auto 1fr auto;
+            grid-template-columns: auto auto 1fr auto;
             gap: 1rem;
             align-items: center;
             cursor: pointer;
             transition: all 0.2s;
         }
+        
+        .session-card.selected {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.1);
+        }
 
         .session-card:hover {
             border-color: var(--accent);
             transform: translateX(4px);
+        }
+        
+        .session-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .session-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
         }
 
         .session-icon {
@@ -837,12 +870,162 @@
             background: var(--accent);
             border-color: var(--accent);
         }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.hidden {
+            display: none;
+        }
+        
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .modal-content {
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 1rem;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-header h2 {
+            font-size: 1.25rem;
+            margin: 0;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-body h3 {
+            color: var(--accent);
+            margin: 1.5rem 0 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .modal-body h3:first-child {
+            margin-top: 0;
+        }
+        
+        .modal-body p, .modal-body li {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .modal-body ul, .modal-body ol {
+            padding-left: 1.5rem;
+        }
+        
+        .modal-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Piano Roll Editor */
+        .piano-roll-container {
+            position: relative;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .piano-roll-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .piano-roll-canvas {
+            width: 100%;
+            height: 300px;
+            cursor: crosshair;
+        }
+        
+        .piano-roll-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+        
+        .toolbar-btn {
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .toolbar-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .note-rect {
+            fill: var(--accent);
+            stroke: var(--accent-light);
+            stroke-width: 1;
+            cursor: move;
+            transition: fill 0.1s;
+        }
+        
+        .note-rect:hover {
+            fill: var(--accent-light);
+        }
+        
+        .note-rect.selected {
+            fill: var(--success);
+            stroke: white;
+            stroke-width: 2;
+        }
     </style>
 </head>
 
 <body>
     <header class="header">
-        <div class="logo-container">
+        <div class="logo-container" onclick="goHome()" style="cursor: pointer;" title="Volver al inicio">
             <pre class="logo">╦  ╦╔═╗╔═╗ ╔═╗ ╔═╗╔═╗╔═╗╔═╗
 ╚╗╔╝║ ║╔═╝─╠═╣─║  ║ ║╚═╗╠═╣
  ╚╝ ╚═╝╚═╝ ╩ ╩ ╚═╝╚═╝╚═╝╩ ╩</pre>
@@ -856,6 +1039,7 @@
             <button class="tab active" data-tab="record">🎤 Grabar</button>
             <button class="tab" data-tab="analyze">📊 Analizar</button>
             <button class="tab" data-tab="synth">🎹 Sintetizar</button>
+            <button class="tab" data-tab="calibrate">🎯 Calibrar</button>
             <button class="tab" data-tab="sessions">📁 Sesiones</button>
         </nav>
     </header>
@@ -873,6 +1057,28 @@
                     <div class="step"><span class="step-num">3</span> Sintetizar</div>
                 </div>
 
+                <!-- Welcome message for first-time users -->
+                <div id="welcomeMessage" class="welcome-box">
+                    <h2>👋 ¡Bienvenido!</h2>
+                    <p style="font-size: 1.1rem; margin: 0.5rem 0;">Convertí tu voz en música con cualquier instrumento</p>
+                    <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem;">🎤</div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">1. Grabá</div>
+                        </div>
+                        <div style="font-size: 2rem; color: var(--text-secondary);">→</div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem;">📊</div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">2. Corregí</div>
+                        </div>
+                        <div style="font-size: 2rem; color: var(--text-secondary);">→</div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem;">🎹</div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">3. Elegí instrumento</div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="record-container">
                     <div class="waveform-display">
                         <canvas id="recordWaveform"></canvas>
@@ -884,7 +1090,7 @@
                         <div class="record-icon"></div>
                     </button>
 
-                    <p class="record-hint" id="recordHint">Presiona para grabar tu voz o melodía</p>
+                    <p class="record-hint" id="recordHint">⬆️ Presioná el botón rojo para empezar a grabar</p>
 
                     <!-- Settings with clear descriptions -->
                     <div class="settings-section">
@@ -949,6 +1155,22 @@
                                 </select>
                             </div>
                             <p class="setting-desc">Detectamos la tonalidad automáticamente</p>
+                        </div>
+
+                        <!-- CREPE Model selection -->
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <span class="setting-icon">🧠</span>
+                                <span class="setting-title">Modelo IA</span>
+                                <select id="crepeModelSelect" class="setting-select" style="min-width: 180px;">
+                                    <option value="full" selected>🎯 Full - SOTA (más preciso)</option>
+                                    <option value="large">🐇 Large - Muy buena calidad</option>
+                                    <option value="medium">⚖️ Medium - Balanceado</option>
+                                    <option value="small">🚀 Small - Rápido (menos preciso)</option>
+                                    <option value="tiny">⚡ Tiny - Muy rápido (baja calidad)</option>
+                                </select>
+                            </div>
+                            <p class="setting-desc" id="crepeModelDesc">Máxima precisión con redes neuronales profundas (SOTA)</p>
                         </div>
 
                         <!-- Toggle advanced mode -->
@@ -1022,7 +1244,7 @@
                                     <option value="B">B (Si)</option>
                                 </select>
                             </div>
-                            <button class="preview-btn" onclick="playReferenceNote()" title="Escuchar nota">🔊</button>
+                            <button class="preview-btn" onclick="playReferenceNote('editRootNote')" title="Escuchar nota">🔊</button>
 
                             <div style="flex: 1; min-width: 120px;">
                                 <label style="font-size: 0.7rem; color: var(--text-secondary);">Escala</label>
@@ -1035,26 +1257,35 @@
                                     <option value="chromatic">Cromática</option>
                                 </select>
                             </div>
-                            <button class="preview-btn" onclick="playReferenceScale()"
+                            <button class="preview-btn" onclick="playReferenceScale('editRootNote', 'editScaleType')"
                                 title="Escuchar escala">🎹</button>
                         </div>
 
+                        <!-- Explicación del flujo -->
+                        <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px; border-left: 3px solid var(--accent);">
+                            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0;">
+                                💡 <strong>¿Cómo corregir?</strong> Elegí la tonalidad correcta arriba y presioná <em>"Aplicar corrección"</em>. 
+                                Las notas se re-ajustarán a la nueva escala sin re-analizar el audio.
+                            </p>
+                        </div>
+
                         <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                            <button class="btn btn-secondary" id="reanalyzeBtn" style="flex: 1;"
-                                onclick="reanalyzeWithNewKey()">
-                                🔄 Re-procesar Tonalidad
+                            <button class="btn btn-primary" id="reanalyzeBtn" style="flex: 2;"
+                                onclick="reanalyzeWithNewKey()"
+                                title="Usa las frecuencias originales y las re-mapea a la escala que elegiste. Rápido.">
+                                ✅ Aplicar corrección
                             </button>
-                            <button class="btn btn-secondary" style="flex: 1; background: var(--bg-tertiary);"
+                            <button class="btn btn-secondary" style="flex: 1; background: var(--bg-tertiary); font-size: 0.8rem;"
                                 onclick="reanalyzeLastRecording()"
-                                title="Volver a enviar el audio original para análisis completo">
-                                🧠 Re-analizar Audio
+                                title="Vuelve a enviar el audio a CREPE desde cero. Más lento. Ignora tu corrección de tonalidad.">
+                                🔄 Re-analizar desde cero
                             </button>
                         </div>
                     </div>
 
                     <div
                         style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                        <button class="btn btn-success" id="goToSynthBtn">🎹 Siguiente: Elegir instrumento</button>
+                        <button class="btn btn-success" id="goToAnalyzeBtn" onclick="switchTab('analyze')">📊 Siguiente: Analizar y Corregir</button>
                         <button class="btn btn-secondary" id="newRecordBtn">🔄 Grabar de nuevo</button>
                     </div>
                 </div>
@@ -1067,25 +1298,226 @@
             </div>
         </section>
 
-        <!-- TAB: ANALIZAR (subir archivo) -->
+        <!-- TAB: ANALIZAR (Editor de notas + subir archivo) -->
         <section id="tab-analyze" class="tab-content">
             <div class="card">
-                <div class="card-title">📂 Subir archivo de audio</div>
-                <div class="analyze-container">
-                    <div class="upload-zone" id="uploadZone">
-                        <div class="upload-icon">🎵</div>
-                        <p class="upload-text">
-                            Arrastra un archivo aquí o <strong>haz clic para seleccionar</strong>
-                        </p>
-                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem">
-                            WAV, MP3, M4A, FLAC
-                        </p>
-                        <input type="file" id="audioFile" accept="audio/*" hidden>
+                <div class="card-title">📊 Analizar y Editar Notas</div>
+                
+                <!-- No session state -->
+                <div id="analyzeNoSession">
+                    <div class="empty-state">
+                        <div class="empty-icon">🎵</div>
+                        <p>No hay sesión activa para analizar</p>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-secondary);">Graba audio o sube un archivo para comenzar</p>
                     </div>
+                    
+                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                        <div class="card-title">📂 Subir archivo de audio</div>
+                        <div class="upload-zone" id="uploadZone">
+                            <div class="upload-icon">🎵</div>
+                            <p class="upload-text">
+                                Arrastra un archivo aquí o <strong>haz clic para seleccionar</strong>
+                            </p>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem">
+                                WAV, MP3, M4A, FLAC
+                            </p>
+                            <input type="file" id="audioFile" accept="audio/*" hidden>
+                        </div>
 
-                    <div id="fileInfo" class="hidden" style="margin-top: 1.5rem;">
-                        <p style="color: var(--accent);">📄 <span id="fileName"></span></p>
-                        <button class="btn" id="analyzeFileBtn" style="margin-top: 1rem;">🔍 Analizar</button>
+                        <div id="fileInfo" class="hidden" style="margin-top: 1.5rem; text-align: center;">
+                            <p style="color: var(--accent);">📄 <span id="fileName"></span></p>
+                            <button class="btn" id="analyzeFileBtn" style="margin-top: 1rem;">🔍 Analizar</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Session loaded state -->
+                <div id="analyzeWithSession" class="hidden">
+                    <!-- Session info header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">Sesión:</span>
+                            <strong id="analyzeSessionId" style="margin-left: 0.5rem;">-</strong>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="toolbar-btn" onclick="loadAnotherSession()">📂 Cargar otra</button>
+                            <button class="toolbar-btn" style="background: var(--accent);" onclick="startNewRecording()">🎤 Nueva grabación</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Audio player -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <p class="setting-desc" style="margin-bottom: 0.5rem;">🎧 Audio original:</p>
+                        <audio id="analyzeOriginalAudio" controls style="width: 100%;"></audio>
+                    </div>
+                    
+                    <!-- Stats row -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="setting-card" style="text-align: center; margin: 0;">
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="analyzeNotesCount">0</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Notas</div>
+                        </div>
+                        <div class="setting-card" style="text-align: center; margin: 0;">
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="analyzeDuration">0s</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Duración</div>
+                        </div>
+                        <div class="setting-card" style="text-align: center; margin: 0;">
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="analyzeKey">-</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Tonalidad</div>
+                        </div>
+                    </div>
+                    
+                    <!-- PASO 1: Corregir Tonalidad -->
+                    <div class="setting-card" style="border: 2px solid var(--accent); position: relative;">
+                        <div style="position: absolute; top: -12px; left: 16px; background: var(--bg-card); padding: 0 8px; font-size: 0.7rem; color: var(--accent); font-weight: 600;">
+                            PASO 1 • OPCIONAL
+                        </div>
+                        <div class="setting-header">
+                            <span class="setting-icon">🎼</span>
+                            <span class="setting-title">¿La tonalidad detectada es incorrecta?</span>
+                        </div>
+                        
+                        <div style="background: var(--bg-tertiary); padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">
+                                📊 <strong>Detección automática:</strong> <span id="analyzeAutoDetectedKey" style="color: var(--accent);">-</span>
+                            </p>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0 0 0;">
+                                Si esto es incorrecto, elegí la tonalidad correcta abajo y presioná "Aplicar".
+                                <br>Las notas se re-ajustarán a la nueva escala.
+                            </p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;">
+                            <div style="flex: 1; min-width: 100px;">
+                                <label style="font-size: 0.7rem; color: var(--text-secondary);">Nota raíz</label>
+                                <select id="analyzeRootNote" class="setting-select" style="width: 100%;">
+                                    <option value="C">C (Do)</option>
+                                    <option value="C#">C#</option>
+                                    <option value="D">D (Re)</option>
+                                    <option value="D#">D#</option>
+                                    <option value="E">E (Mi)</option>
+                                    <option value="F">F (Fa)</option>
+                                    <option value="F#">F#</option>
+                                    <option value="G">G (Sol)</option>
+                                    <option value="G#">G#</option>
+                                    <option value="A">A (La)</option>
+                                    <option value="A#">A#</option>
+                                    <option value="B">B (Si)</option>
+                                </select>
+                            </div>
+                            <button class="preview-btn" onclick="playReferenceNote('analyzeRootNote')" title="Escuchar nota">🔊</button>
+                            
+                            <div style="flex: 1; min-width: 120px;">
+                                <label style="font-size: 0.7rem; color: var(--text-secondary);">Escala</label>
+                                <select id="analyzeScaleType" class="setting-select" style="width: 100%;">
+                                    <option value="major">Mayor</option>
+                                    <option value="natural_minor">Menor</option>
+                                    <option value="pentatonic_major">Pentatónica Mayor</option>
+                                    <option value="pentatonic_minor">Pentatónica Menor</option>
+                                    <option value="blues">Blues</option>
+                                    <option value="chromatic">Cromática (libre)</option>
+                                </select>
+                            </div>
+                            <button class="preview-btn" onclick="playReferenceScale('analyzeRootNote', 'analyzeScaleType')" title="Escuchar escala">🎹</button>
+                            
+                            <button class="btn btn-primary" onclick="reanalyzeFromAnalyzeTab()" title="Re-cuantiza las notas a la nueva escala">
+                                ✅ Aplicar corrección
+                            </button>
+                        </div>
+                        
+                        <div id="tonalityCorrectionResult" style="margin-top: 0.75rem; padding: 0.5rem; border-radius: 6px; display: none;">
+                        </div>
+                    </div>
+                    
+                    <!-- PASO 2: Editar Notas Individuales -->
+                    <div class="piano-roll-container" style="margin-top: 1.5rem; border: 2px solid var(--border); position: relative;">
+                        <div style="position: absolute; top: -12px; left: 16px; background: var(--bg-card); padding: 0 8px; font-size: 0.7rem; color: var(--text-secondary); font-weight: 600;">
+                            PASO 2 • OPCIONAL
+                        </div>
+                        <div class="piano-roll-header" style="margin-top: 0.5rem;">
+                            <span style="font-weight: 500;">🎹 Editor de Notas (Piano Roll)</span>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">Click para seleccionar • Doble-click para eliminar • Arrastra para mover</span>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); padding: 0 1rem; margin: 0;">
+                            Si alguna nota específica está mal, podés moverla, eliminarla o agregar nuevas.
+                        </p>
+                        <canvas id="pianoRollCanvas" class="piano-roll-canvas"></canvas>
+                        <div class="piano-roll-toolbar">
+                            <button class="toolbar-btn" onclick="pianoRollZoomIn()">🔍+ Zoom In</button>
+                            <button class="toolbar-btn" onclick="pianoRollZoomOut()">🔍- Zoom Out</button>
+                            <button class="toolbar-btn" onclick="pianoRollAddNote()">➕ Añadir Nota</button>
+                            <button class="toolbar-btn" onclick="pianoRollDeleteSelected()">🗑️ Eliminar</button>
+                            <div style="flex: 1;"></div>
+                            <button class="toolbar-btn" onclick="undoPianoRoll()">↩️ Deshacer</button>
+                            <button class="btn btn-success" onclick="savePianoRollChanges()" style="padding: 0.5rem 1rem;">💾 Guardar Cambios</button>
+                        </div>
+                        
+                        <!-- Reproductor de notas -->
+                        <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                            <button class="btn btn-primary" id="playNotesBtn" onclick="playDetectedNotes()" style="font-size: 1rem; padding: 0.5rem 1.5rem;">
+                                ▶️ Reproducir Notas
+                            </button>
+                            <button class="btn btn-secondary" id="stopNotesBtn" onclick="stopPlayback()" style="display: none;">
+                                ⏹️ Parar
+                            </button>
+                            <div style="flex: 1; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 0.75rem; color: var(--text-secondary);">Tempo:</span>
+                                <input type="range" id="playbackTempo" min="60" max="200" value="120" style="flex: 1; max-width: 120px;">
+                                <span id="tempoValue" style="font-size: 0.75rem; min-width: 45px;">120 BPM</span>
+                            </div>
+                            <div id="playbackProgress" style="font-size: 0.75rem; color: var(--accent);"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- PASO 3: Ir a Sintetizar -->
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-card)); border-radius: 12px; border: 2px solid var(--success); position: relative;">
+                        <div style="position: absolute; top: -12px; left: 16px; background: var(--bg-card); padding: 0 8px; font-size: 0.7rem; color: var(--success); font-weight: 600;">
+                            PASO 3 • CUANDO ESTÉS LISTO
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <p style="font-weight: 500; margin: 0;">✅ ¿Las notas están correctas?</p>
+                                <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
+                                    Pasá a "Sintetizar" para elegir instrumento y generar el MIDI/Audio final.
+                                </p>
+                            </div>
+                            <button class="btn btn-success" onclick="switchTab('synth')" style="font-size: 1rem; padding: 0.75rem 1.5rem;">
+                                🎹 Ir a Sintetizar →
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Notes table (collapsible) -->
+                    <details style="margin-top: 1.5rem;">
+                        <summary style="cursor: pointer; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px; font-size: 0.9rem;">
+                            📋 Ver lista detallada de notas
+                        </summary>
+                        <div style="max-height: 200px; overflow-y: auto; background: var(--bg-tertiary); border-radius: 0 0 8px 8px;">
+                            <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: var(--bg-card); position: sticky; top: 0;">
+                                        <th style="padding: 0.5rem; text-align: left;">#</th>
+                                        <th style="padding: 0.5rem; text-align: left;">Nota</th>
+                                        <th style="padding: 0.5rem; text-align: left;">Inicio</th>
+                                        <th style="padding: 0.5rem; text-align: left;">Duración</th>
+                                        <th style="padding: 0.5rem; text-align: left;">Vel</th>
+                                        <th style="padding: 0.5rem; text-align: left;">Confianza</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="notesTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                    
+                    <!-- Calibration helper -->
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px; border-left: 3px solid var(--warning);">
+                        <p style="font-size: 0.8rem; margin: 0;">
+                            <strong>💡 ¿Hiciste correcciones?</strong> Guardá este ejemplo para que el sistema aprenda de tus correcciones.
+                        </p>
+                        <button class="btn" style="background: var(--warning); margin-top: 0.75rem; font-size: 0.85rem;" onclick="saveAsCalibrationExample()" title="Usa estas notas corregidas para mejorar la detección futura">
+                            🎯 Guardar como Ejemplo de Calibración
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1125,10 +1557,103 @@
             </div>
         </section>
 
+        <!-- TAB: CALIBRAR -->
+        <section id="tab-calibrate" class="tab-content">
+            <div class="card">
+                <div class="card-title">🎯 Calibración del Sistema</div>
+                
+                <div style="background: var(--bg-tertiary); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0 0 1rem 0; font-size: 1rem;">¿Qué es la calibración?</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                        El sistema aprende de tus correcciones. Cada vez que editas notas en el Piano Roll y las guardás como ejemplo, 
+                        el sistema aprende tu patrón de afinación (ej: si tendés a cantar un poco más agudo o grave).
+                        <br><br>
+                        <strong>Esto NO re-entrena el modelo CREPE</strong> (eso requeriría GPU y muchos datos), 
+                        pero aplica correcciones inteligentes basadas en tu historial.
+                    </p>
+                </div>
+                
+                <!-- Calibration Status -->
+                <div class="setting-card" id="calibrationStatus">
+                    <div class="setting-header">
+                        <span class="setting-icon">📊</span>
+                        <span class="setting-title">Estado de Calibración</span>
+                        <span id="calibrationBadge" class="result-value" style="font-size: 0.8rem; padding: 0.25rem 0.5rem; background: var(--bg-tertiary); border-radius: 4px;">No calibrado</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="calExamples">0</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Ejemplos</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="calPitchOffset">0¢</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Offset Pitch</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="calTimingOffset">0ms</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Offset Timing</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- How to calibrate -->
+                <div class="setting-card" style="margin-top: 1rem;">
+                    <div class="setting-header">
+                        <span class="setting-icon">📝</span>
+                        <span class="setting-title">Cómo Calibrar</span>
+                    </div>
+                    <ol style="color: var(--text-secondary); font-size: 0.9rem; padding-left: 1.5rem; margin: 1rem 0 0 0; line-height: 1.8;">
+                        <li><strong>Grabá</strong> una melodía simple (ej: 5 notas claras, o "Feliz Cumpleaños")</li>
+                        <li>Ve a <strong>Analizar</strong> y corrige las notas en el Piano Roll</li>
+                        <li>Cuando estén correctas, hacé click en <strong>"Guardar como Ejemplo"</strong> abajo</li>
+                        <li>Repetí con 3-5 ejemplos para mejor calibración</li>
+                    </ol>
+                </div>
+                
+                <!-- Actions -->
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="saveCurrentAsExample()" id="saveExampleBtn" disabled>
+                        💾 Guardar Sesión Actual como Ejemplo
+                    </button>
+                    <button class="btn btn-secondary" onclick="applyCalibrationToSession()" id="applyCalBtn" disabled>
+                        🔄 Aplicar Calibración a Sesión Actual
+                    </button>
+                    <button class="btn" style="background: var(--danger);" onclick="resetCalibration()">
+                        🗑️ Resetear Calibración
+                    </button>
+                </div>
+                
+                <!-- Examples list -->
+                <div style="margin-top: 2rem;">
+                    <div class="card-title">📚 Ejemplos Guardados</div>
+                    <div id="calibrationExamples" style="max-height: 200px; overflow-y: auto;">
+                        <div class="empty-state" style="padding: 2rem;">
+                            <p style="color: var(--text-secondary);">No hay ejemplos aún. Grabá y corregí una melodía para comenzar.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tips -->
+                <div style="margin-top: 2rem; padding: 1rem; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--accent); border-radius: 8px;">
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: var(--accent);">💡 Tips para mejor calibración</h4>
+                    <ul style="color: var(--text-secondary); font-size: 0.85rem; padding-left: 1.5rem; margin: 0; line-height: 1.6;">
+                        <li>Usá melodías simples y conocidas (escalas, canciones infantiles)</li>
+                        <li>Corrige TODAS las notas antes de guardar el ejemplo</li>
+                        <li>Incluí notas de diferentes octavas (graves y agudas)</li>
+                        <li>3-5 ejemplos buenos son suficientes</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
         <!-- TAB: SESIONES -->
         <section id="tab-sessions" class="tab-content">
             <div class="card">
-                <div class="card-title">📁 Sesiones guardadas</div>
+                <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>📁 Sesiones guardadas</span>
+                    <span id="sessionsCount" style="font-size: 0.8rem; color: var(--text-secondary);"></span>
+                </div>
 
                 <div id="sessionsLoading" class="progress-container">
                     <div class="spinner"></div>
@@ -1142,6 +1667,19 @@
                         🎤 Grabar ahora
                     </button>
                 </div>
+                
+                <!-- Toolbar de selección -->
+                <div id="sessionsToolbar" class="hidden" style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="selectAllSessions" onchange="toggleSelectAllSessions()" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="font-size: 0.85rem;">Seleccionar todas</span>
+                    </label>
+                    <div style="flex: 1;"></div>
+                    <span id="selectedCount" style="font-size: 0.8rem; color: var(--text-secondary);">0 seleccionadas</span>
+                    <button class="btn btn-secondary" id="deleteSelectedBtn" onclick="deleteSelectedSessions()" style="background: var(--error); display: none;">
+                        🗑️ Eliminar seleccionadas
+                    </button>
+                </div>
 
                 <div id="sessionsList" class="sessions-grid hidden"></div>
             </div>
@@ -1151,7 +1689,70 @@
     <footer class="status-bar">
         <div class="status-dot" id="statusDot"></div>
         <span class="status-text" id="statusText">Listo</span>
+        <div style="margin-left: auto; display: flex; gap: 1rem; align-items: center;">
+            <button onclick="showHelpModal()" style="background: transparent; border: 1px solid var(--border); color: var(--text-secondary); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">❓ Ayuda</button>
+            <a href="https://github.com/tu-usuario/vozacosa" target="_blank" style="color: var(--text-secondary); font-size: 0.8rem; text-decoration: none;">GitHub 🔗</a>
+            <span style="color: var(--text-secondary); font-size: 0.75rem;">v1.0</span>
+        </div>
     </footer>
+
+    <!-- HELP MODAL -->
+    <div id="helpModal" class="modal hidden">
+        <div class="modal-overlay" onclick="hideHelpModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>❓ Ayuda - VOZ-A-COSA</h2>
+                <button onclick="hideHelpModal()" style="background: transparent; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>🎤 ¿Cómo usar?</h3>
+                <ol>
+                    <li><strong>Grabar:</strong> Presiona el botón rojo para grabar tu voz cantando, tarareando o silbando.</li>
+                    <li><strong>Analizar:</strong> El sistema detecta automáticamente las notas. Podés corregir la tonalidad si es incorrecta.</li>
+                    <li><strong>Editar:</strong> En la pestaña "Analizar" podés ver y editar las notas en el Piano Roll.</li>
+                    <li><strong>Sintetizar:</strong> Elegí un instrumento y descargá el MIDI/WAV.</li>
+                </ol>
+                
+                <h3>🎹 Instrumentos</h3>
+                <p>VOZ-A-COSA incluye 8 instrumentos predefinidos usando síntesis wavetable y SoundFonts:</p>
+                <ul>
+                    <li><strong>Piano Cálido:</strong> Piano acústico (SoundFont)</li>
+                    <li><strong>Synth Lead:</strong> Lead tipo 80s (Sawtooth)</li>
+                    <li><strong>Synth Pad:</strong> Pad atmosférico (Sine + Chorus)</li>
+                    <li><strong>Bass 808:</strong> Sub bass estilo trap</li>
+                    <li><strong>Pluck:</strong> Cuerda punteada (Karplus-Strong)</li>
+                    <li><strong>Cuerdas:</strong> Ensemble de cuerdas (SoundFont)</li>
+                    <li><strong>Flauta:</strong> Flauta traversa (SoundFont)</li>
+                    <li><strong>Órgano Rock:</strong> Hammond B3 (Additive)</li>
+                </ul>
+                
+                <h3>🎼 Escalas soportadas</h3>
+                <p>Mayor, Menor, Pentatónica, Blues, Modos (Dorian, Phrygian, etc.), y más.</p>
+                
+                <h3>💡 Tips para mejor detección</h3>
+                <ul>
+                    <li>Canta notas claras y sostenidas (al menos 0.1 segundos)</li>
+                    <li>Evita ruido de fondo</li>
+                    <li>Usa auriculares si hay retroalimentación</li>
+                    <li>Si la detección es incorrecta, cambia la escala/tonalidad manualmente</li>
+                    <li>Usa el Piano Roll para corregir notas individuales</li>
+                    <li><strong>¡Calibrá el sistema!</strong> Guardá ejemplos corregidos para mejorar la detección</li>
+                </ul>
+                
+                <h3>🎯 Sistema de Calibración</h3>
+                <p>VOZ-A-COSA aprende de tus correcciones:</p>
+                <ol>
+                    <li>Grabá y corregí las notas en el Piano Roll</li>
+                    <li>Guardá como "Ejemplo de Calibración"</li>
+                    <li>Repetí 3-5 veces con diferentes melodías</li>
+                    <li>El sistema aprenderá tu patrón de afinación</li>
+                </ol>
+                
+                <h3>🔧 Tecnología</h3>
+                <p><strong>CREPE</strong> (Convolutional Representation for Pitch Estimation) - Red neuronal CNN para detección de pitch con precisión de ~10 cents.</p>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ========== STATE ==========
@@ -1181,7 +1782,259 @@
             loadInstruments();
             loadSessions();
             initAdvancedControls();
+            initPianoRollCanvas();
         });
+
+        function initPianoRollCanvas() {
+            const canvas = document.getElementById('pianoRollCanvas');
+            if (canvas) {
+                // Initial sizing
+                const rect = canvas.parentElement?.getBoundingClientRect();
+                if (rect) {
+                    canvas.width = rect.width;
+                    canvas.height = 300;
+                }
+                
+                // Setup drag & drop interactions
+                setupPianoRollDragDrop(canvas);
+            }
+        }
+        
+        // Piano Roll drag state
+        let isDragging = false;
+        let isResizing = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragNoteOriginal = null;
+        const PIANO_KEY_WIDTH = 40; // Width of piano keys on left side
+        
+        function setupPianoRollDragDrop(canvas) {
+            canvas.addEventListener('mousedown', onPianoRollMouseDown);
+            canvas.addEventListener('mousemove', onPianoRollMouseMove);
+            canvas.addEventListener('mouseup', onPianoRollMouseUp);
+            canvas.addEventListener('mouseleave', onPianoRollMouseUp);
+        }
+        
+        function getPianoRollMetrics(canvas) {
+            if (!currentNotes || currentNotes.length === 0) return null;
+            
+            const midiNotes = currentNotes.map(n => n.midi_note);
+            const minMidi = Math.max(0, Math.min(...midiNotes) - 3);
+            const maxMidi = Math.min(127, Math.max(...midiNotes) + 3);
+            const midiRange = maxMidi - minMidi + 1;
+            const maxTime = Math.max(...currentNotes.map(n => n.start_time + n.duration)) * pianoRollZoom;
+            const timeScale = canvas.width / Math.max(maxTime, 1);
+            const noteHeight = canvas.height / midiRange;
+            
+            return { minMidi, maxMidi, midiRange, maxTime, timeScale, noteHeight };
+        }
+        
+        function findNoteAtPosition(canvas, x, y) {
+            const metrics = getPianoRollMetrics(canvas);
+            if (!metrics) return { noteIndex: -1, isOnEdge: false };
+            
+            const { minMidi, timeScale, noteHeight } = metrics;
+            const edgeThreshold = 8; // pixels from edge to trigger resize
+            
+            for (let i = currentNotes.length - 1; i >= 0; i--) {
+                const note = currentNotes[i];
+                const noteX = note.start_time * timeScale * pianoRollZoom;
+                const noteWidth = Math.max(note.duration * timeScale * pianoRollZoom, 10);
+                const noteY = canvas.height - (note.midi_note - minMidi + 1) * noteHeight;
+                
+                if (x >= noteX && x <= noteX + noteWidth && y >= noteY && y <= noteY + noteHeight) {
+                    // Check if near right edge (resize handle)
+                    const isOnEdge = (x >= noteX + noteWidth - edgeThreshold);
+                    return { noteIndex: i, isOnEdge };
+                }
+            }
+            
+            return { noteIndex: -1, isOnEdge: false };
+        }
+        
+        function onPianoRollMouseDown(e) {
+            const canvas = e.target;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Check if clicking on piano keys (left side)
+            if (x < PIANO_KEY_WIDTH) {
+                const metrics = getPianoRollMetrics(canvas);
+                if (metrics) {
+                    const { minMidi, noteHeight } = metrics;
+                    const clickedMidi = minMidi + Math.floor((canvas.height - y) / noteHeight);
+                    playPianoKey(clickedMidi);
+                }
+                return;
+            }
+            
+            const { noteIndex, isOnEdge } = findNoteAtPosition(canvas, x, y);
+            
+            if (noteIndex >= 0) {
+                selectedNoteIndex = noteIndex;
+                dragNoteOriginal = { ...currentNotes[noteIndex] };
+                dragStartX = x;
+                dragStartY = y;
+                
+                if (isOnEdge) {
+                    isResizing = true;
+                    canvas.style.cursor = 'ew-resize';
+                } else {
+                    isDragging = true;
+                    canvas.style.cursor = 'grabbing';
+                    // Also play the note being dragged
+                    playPianoKey(currentNotes[noteIndex].midi_note);
+                }
+                
+                // Save state for undo
+                notesHistory.push(JSON.stringify(currentNotes));
+                
+                renderNotesTable();
+                renderPianoRoll();
+            } else {
+                selectedNoteIndex = -1;
+                renderNotesTable();
+                renderPianoRoll();
+            }
+        }
+        
+        // Play a piano key by MIDI note number
+        function playPianoKey(midiNote) {
+            const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            // Nice piano-like sound with harmonics
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            
+            // Quick attack, medium decay
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+            
+            // Show note name in status
+            const noteName = midiToNoteName(midiNote);
+            setStatus(`🎹 ${noteName} (MIDI ${midiNote})`);
+        }
+        
+        function onPianoRollMouseMove(e) {
+            const canvas = e.target;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Update cursor based on hover position
+            if (!isDragging && !isResizing) {
+                const { noteIndex, isOnEdge } = findNoteAtPosition(canvas, x, y);
+                if (noteIndex >= 0) {
+                    canvas.style.cursor = isOnEdge ? 'ew-resize' : 'grab';
+                } else {
+                    canvas.style.cursor = 'default';
+                }
+            }
+            
+            // Handle dragging
+            if ((isDragging || isResizing) && selectedNoteIndex >= 0 && dragNoteOriginal) {
+                const metrics = getPianoRollMetrics(canvas);
+                if (!metrics) return;
+                
+                const { minMidi, midiRange, timeScale, noteHeight } = metrics;
+                const deltaX = x - dragStartX;
+                const deltaY = y - dragStartY;
+                
+                if (isDragging) {
+                    // Move note: change start_time and midi_note
+                    const timeDelta = deltaX / (timeScale * pianoRollZoom);
+                    const midiDelta = -Math.round(deltaY / noteHeight);
+                    
+                    const newMidi = Math.max(21, Math.min(108, dragNoteOriginal.midi_note + midiDelta));
+                    const oldMidi = currentNotes[selectedNoteIndex].midi_note;
+                    
+                    currentNotes[selectedNoteIndex].start_time = Math.max(0, dragNoteOriginal.start_time + timeDelta);
+                    currentNotes[selectedNoteIndex].midi_note = newMidi;
+                    currentNotes[selectedNoteIndex].note_name = midiToNoteName(newMidi);
+                    
+                    // Play note when pitch changes
+                    if (newMidi !== oldMidi) {
+                        playPianoKeyQuick(newMidi);
+                    }
+                    
+                } else if (isResizing) {
+                    // Resize note: change duration
+                    const timeDelta = deltaX / (timeScale * pianoRollZoom);
+                    currentNotes[selectedNoteIndex].duration = Math.max(0.05, dragNoteOriginal.duration + timeDelta);
+                }
+                
+                renderPianoRoll();
+            }
+        }
+        
+        // Quick piano sound for dragging feedback (shorter, quieter)
+        let lastPlayedMidi = -1;
+        let lastPlayTime = 0;
+        function playPianoKeyQuick(midiNote) {
+            const now = Date.now();
+            // Throttle to avoid too many sounds
+            if (midiNote === lastPlayedMidi && now - lastPlayTime < 150) return;
+            lastPlayedMidi = midiNote;
+            lastPlayTime = now;
+            
+            const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.start();
+            osc.stop(ctx.currentTime + 0.15);
+        }
+        
+        function onPianoRollMouseUp(e) {
+            const canvas = document.getElementById('pianoRollCanvas');
+            
+            if (isDragging || isResizing) {
+                // Round values for cleaner output
+                if (selectedNoteIndex >= 0) {
+                    const note = currentNotes[selectedNoteIndex];
+                    note.start_time = Math.round(note.start_time * 100) / 100;
+                    note.duration = Math.round(note.duration * 100) / 100;
+                }
+                
+                isDragging = false;
+                isResizing = false;
+                dragNoteOriginal = null;
+                
+                if (canvas) canvas.style.cursor = 'default';
+                
+                renderNotesTable();
+                renderPianoRoll();
+                setStatus('Nota modificada');
+            }
+        }
+        
+        function midiToNoteName(midi) {
+            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const octave = Math.floor(midi / 12) - 1;
+            const noteName = noteNames[midi % 12];
+            return noteName + octave;
+        }
 
         function initAdvancedControls() {
             // Tuning slider
@@ -1194,6 +2047,21 @@
             const gateSlider = document.getElementById('gateThreshold');
             gateSlider?.addEventListener('input', () => {
                 document.getElementById('gateValue').textContent = gateSlider.value + '%';
+            });
+            
+            // CREPE model description
+            const crepeSelect = document.getElementById('crepeModelSelect');
+            const crepeDescriptions = {
+                'full': '🎯 Máxima precisión (~10 cents). 1.3M parámetros. Puede tardar 30-60 seg.',
+                'large': '✨ Muy precisa. 320K parámetros. Tarda 15-30 segundos.',
+                'medium': '⚖️ Balanceado entre velocidad y precisión. 80K parámetros.',
+                'small': '🚀 Rápido pero menos preciso. 20K parámetros.',
+                'tiny': '⚡ Muy rápido (2-5 seg) pero calidad básica. 5K parámetros.'
+            };
+            
+            crepeSelect?.addEventListener('change', () => {
+                const desc = crepeDescriptions[crepeSelect.value] || '';
+                document.getElementById('crepeModelDesc').textContent = desc;
             });
         }
 
@@ -1224,29 +2092,6 @@
             'blues': [0, 3, 5, 6, 7, 10, 12],
             'chromatic': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         };
-
-        function playReferenceNote() {
-            const note = document.getElementById('editRootNote').value;
-            const freq = NOTE_FREQUENCIES[note];
-            playTone(freq, 2.0);
-            setStatus(`🔊 Nota: ${note} (${freq.toFixed(0)} Hz)`);
-        }
-
-        function playReferenceScale() {
-            const note = document.getElementById('editRootNote').value;
-            const scaleType = document.getElementById('editScaleType').value;
-            const baseFreq = NOTE_FREQUENCIES[note];
-            const intervals = SCALE_INTERVALS[scaleType] || SCALE_INTERVALS['major'];
-
-            setStatus(`🎹 Escala: ${note} ${scaleType}`);
-
-            intervals.forEach((semitones, i) => {
-                setTimeout(() => {
-                    const freq = baseFreq * Math.pow(2, semitones / 12);
-                    playTone(freq, 0.3);
-                }, i * 400);
-            });
-        }
 
         function playTone(freq, duration) {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1296,8 +2141,14 @@
 
                 document.getElementById('detectedKeyBadge').textContent = `${rootNote} ${scaleType}`;
                 document.getElementById('resultNotes').textContent = data.notes_count;
+                
+                // Update session data
+                if (window.currentSessionData) {
+                    window.currentSessionData.notes = data.notes;
+                    window.currentSessionData.detected_key = data.detected_key;
+                }
 
-                setStatus(`✓ Tonalidad ajustada a ${rootNote} ${scaleType} (${data.notes_count} notas)`);
+                setStatus(`✅ ¡Listo! Notas corregidas a ${rootNote} ${scaleType} (${data.notes_count} notas). Ya podés ir a "Sintetizar" para generar el MIDI.`);
 
             } catch (e) {
                 setStatus('Error de conexión: ' + e.message);
@@ -1307,10 +2158,13 @@
 
         async function reanalyzeLastRecording() {
             if (!window.lastRecordedBlob) {
-                setStatus('Error: No hay grabación reciente para re-analizar');
+                setStatus('⚠️ No hay grabación en memoria. Grabá de nuevo o subí un archivo.');
                 return;
             }
-            setStatus('🔄 Re-enviando audio para análisis...', true);
+            if (!confirm('Esto re-analiza el audio desde cero con CREPE.\n\n¿Seguro? Se perderán los ajustes de tonalidad que hayas hecho.')) {
+                return;
+            }
+            setStatus('🧠 Re-analizando audio completo con CREPE...', true);
             await processRecording(window.lastRecordedBlob);
         }
 
@@ -1319,6 +2173,13 @@
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => switchTab(tab.dataset.tab));
             });
+        }
+        
+        function goHome() {
+            // Go to record tab and reset
+            switchTab('record');
+            resetRecordingUI();
+            setStatus('🏠 Inicio - Listo para grabar');
         }
 
         function switchTab(tabId) {
@@ -1330,6 +2191,8 @@
 
             if (tabId === 'sessions') loadSessions();
             if (tabId === 'synth') updateSynthTab();
+            if (tabId === 'analyze') updateAnalyzeTab();
+            if (tabId === 'calibrate') updateCalibrateTab();
         }
 
         // ========== RECORDING ==========
@@ -1337,14 +2200,29 @@
             recordBtn.addEventListener('click', toggleRecording);
 
             document.getElementById('newRecordBtn')?.addEventListener('click', () => {
-                document.getElementById('recordResult').classList.add('hidden');
-                recordBtn.classList.remove('hidden');
-                recordTimer.classList.remove('hidden');
+                resetRecordingUI();
             });
 
-            document.getElementById('goToSynthBtn')?.addEventListener('click', () => {
-                switchTab('synth');
-            });
+            // El botón ya tiene onclick="switchTab('analyze')" en el HTML
+        }
+        
+        function startNewRecording() {
+            // Reset recording UI and switch to record tab
+            resetRecordingUI();
+            switchTab('record');
+            setStatus('🎤 Listo para grabar. Presioná el botón rojo.');
+        }
+        
+        function resetRecordingUI() {
+            document.getElementById('recordResult').classList.add('hidden');
+            recordBtn.classList.remove('hidden');
+            recordTimer.classList.remove('hidden');
+            recordTimer.textContent = '0:00';
+            
+            // Clear previous session data
+            currentSessionId = null;
+            window.currentSessionData = null;
+            window.lastRecordedBlob = null;
         }
 
         async function toggleRecording() {
@@ -1474,9 +2352,14 @@
             const tolerance = tuningSlider ? Math.floor((100 - tuningSlider.value) / 2) : 25;
             formData.append('tolerance', tolerance);
 
+            // Get CREPE model selection
+            const crepeModel = document.getElementById('crepeModelSelect')?.value || 'full';
+            formData.append('crepe_model', crepeModel);
+
             console.log('🎤 Sending to /api/analyze...');
             console.log('🎤 Scale:', document.getElementById('scaleSelect').value);
             console.log('🎤 Tolerance:', tolerance);
+            console.log('🎤 CREPE Model:', crepeModel);
 
             try {
                 const res = await fetch('/api/analyze', {
@@ -1501,6 +2384,15 @@
                 currentSessionId = data.session_id;
                 // Store pitch track for visualization
                 window.currentPitchTrack = data.pitch_track || [];
+                // Store full session data for Analyze tab
+                window.currentSessionData = {
+                    session_id: data.session_id,
+                    duration: data.duration,
+                    notes: data.notes,
+                    detected_key: data.detected_key,
+                    tempo: data.tempo,
+                    is_percussive: data.is_percussive
+                };
 
                 document.getElementById('recordProgress').classList.add('hidden');
                 document.getElementById('recordResult').classList.remove('hidden');
@@ -1738,20 +2630,30 @@
         });
 
         // ========== SESSIONS ==========
+        let selectedSessions = new Set();
+        
         async function loadSessions() {
             try {
                 const res = await fetch('/api/sessions');
                 const sessions = await res.json();
 
                 document.getElementById('sessionsLoading').classList.add('hidden');
+                selectedSessions.clear();
+                updateSelectedCount();
 
                 if (!sessions.length) {
                     document.getElementById('sessionsEmpty').classList.remove('hidden');
                     document.getElementById('sessionsList').classList.add('hidden');
+                    document.getElementById('sessionsToolbar').classList.add('hidden');
+                    document.getElementById('sessionsCount').textContent = '';
                     return;
                 }
 
                 document.getElementById('sessionsEmpty').classList.add('hidden');
+                document.getElementById('sessionsToolbar').classList.remove('hidden');
+                document.getElementById('sessionsToolbar').style.display = 'flex';
+                document.getElementById('sessionsCount').textContent = `${sessions.length} sesiones`;
+                
                 const list = document.getElementById('sessionsList');
                 list.classList.remove('hidden');
                 list.innerHTML = '';
@@ -1759,7 +2661,11 @@
                 sessions.forEach(s => {
                     const card = document.createElement('div');
                     card.className = 'session-card';
+                    card.dataset.sessionId = s.id;
                     card.innerHTML = `
+                        <label class="session-checkbox" onclick="event.stopPropagation()">
+                            <input type="checkbox" class="session-select-cb" value="${s.id}" onchange="toggleSessionSelection('${s.id}', this.checked)">
+                        </label>
                         <div class="session-icon">🎵</div>
                         <div class="session-info">
                             <h3>${s.id}</h3>
@@ -1781,11 +2687,121 @@
                 console.error('Error loading sessions:', e);
             }
         }
+        
+        function toggleSessionSelection(sessionId, isSelected) {
+            if (isSelected) {
+                selectedSessions.add(sessionId);
+            } else {
+                selectedSessions.delete(sessionId);
+            }
+            updateSelectedCount();
+            
+            // Update "select all" checkbox state
+            const allCheckboxes = document.querySelectorAll('.session-select-cb');
+            const selectAllCb = document.getElementById('selectAllSessions');
+            if (selectAllCb) {
+                selectAllCb.checked = selectedSessions.size === allCheckboxes.length && allCheckboxes.length > 0;
+                selectAllCb.indeterminate = selectedSessions.size > 0 && selectedSessions.size < allCheckboxes.length;
+            }
+        }
+        
+        function toggleSelectAllSessions() {
+            const selectAllCb = document.getElementById('selectAllSessions');
+            const allCheckboxes = document.querySelectorAll('.session-select-cb');
+            
+            allCheckboxes.forEach(cb => {
+                cb.checked = selectAllCb.checked;
+                if (selectAllCb.checked) {
+                    selectedSessions.add(cb.value);
+                } else {
+                    selectedSessions.delete(cb.value);
+                }
+            });
+            
+            updateSelectedCount();
+        }
+        
+        function updateSelectedCount() {
+            const countEl = document.getElementById('selectedCount');
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            
+            if (countEl) {
+                countEl.textContent = `${selectedSessions.size} seleccionada${selectedSessions.size !== 1 ? 's' : ''}`;
+            }
+            
+            if (deleteBtn) {
+                deleteBtn.style.display = selectedSessions.size > 0 ? 'inline-block' : 'none';
+            }
+        }
+        
+        async function deleteSelectedSessions() {
+            if (selectedSessions.size === 0) return;
+            
+            const count = selectedSessions.size;
+            if (!confirm(`¿Eliminar ${count} sesión${count !== 1 ? 'es' : ''}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+            
+            setStatus(`Eliminando ${count} sesiones...`, true);
+            
+            let deleted = 0;
+            let errors = 0;
+            
+            for (const sessionId of selectedSessions) {
+                try {
+                    const res = await fetch(`/api/sessions/${sessionId}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        deleted++;
+                    } else {
+                        errors++;
+                    }
+                } catch (e) {
+                    errors++;
+                }
+            }
+            
+            selectedSessions.clear();
+            document.getElementById('selectAllSessions').checked = false;
+            
+            if (errors > 0) {
+                setStatus(`Eliminadas ${deleted} sesiones. ${errors} errores.`);
+            } else {
+                setStatus(`✅ ${deleted} sesiones eliminadas`);
+            }
+            
+            loadSessions();
+        }
 
         async function loadSession(sessionId) {
-            currentSessionId = sessionId;
-            setStatus(`Sesión ${sessionId} cargada`);
-            switchTab('synth');
+            setStatus('Cargando sesión...', true);
+            
+            try {
+                const res = await fetch(`/api/sessions/${sessionId}`);
+                const session = await res.json();
+                
+                if (session.error) {
+                    setStatus('Error: ' + session.error);
+                    return;
+                }
+                
+                currentSessionId = sessionId;
+                
+                // Build session data for analyze tab
+                window.currentSessionData = {
+                    session_id: sessionId,
+                    duration: session.input_duration,
+                    notes: session.detected_notes,
+                    detected_key: session.detected_key,
+                    tempo: session.detected_tempo,
+                    is_percussive: session.is_percussive
+                };
+                
+                setStatus(`Sesión ${sessionId} cargada`);
+                switchTab('analyze');
+                
+            } catch (e) {
+                setStatus('Error: ' + e.message);
+            }
         }
 
         async function deleteSession(sessionId) {
@@ -1814,6 +2830,783 @@
         function setStatus(text, processing = false) {
             document.getElementById('statusText').textContent = text;
             document.getElementById('statusDot').classList.toggle('processing', processing);
+        }
+
+        // ========== HELP MODAL ==========
+        function showHelpModal() {
+            document.getElementById('helpModal').classList.remove('hidden');
+        }
+        
+        function hideHelpModal() {
+            document.getElementById('helpModal').classList.add('hidden');
+        }
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') hideHelpModal();
+        });
+
+        // ========== ANALYZE TAB ==========
+        let currentNotes = [];
+        let selectedNoteIndex = -1;
+        let pianoRollZoom = 1;
+        let notesHistory = [];
+        
+        function updateAnalyzeTab() {
+            const noSession = document.getElementById('analyzeNoSession');
+            const withSession = document.getElementById('analyzeWithSession');
+            
+            if (currentSessionId && window.currentSessionData) {
+                noSession.classList.add('hidden');
+                withSession.classList.remove('hidden');
+                
+                const data = window.currentSessionData;
+                document.getElementById('analyzeSessionId').textContent = currentSessionId;
+                document.getElementById('analyzeNotesCount').textContent = data.notes?.length || 0;
+                document.getElementById('analyzeDuration').textContent = (data.duration || 0).toFixed(1) + 's';
+                document.getElementById('analyzeKey').textContent = data.detected_key || '-';
+                document.getElementById('analyzeOriginalAudio').src = `/api/sessions/${currentSessionId}/audio/original.wav`;
+                
+                // Show auto-detected key
+                const autoDetectedKeyEl = document.getElementById('analyzeAutoDetectedKey');
+                if (autoDetectedKeyEl) {
+                    autoDetectedKeyEl.textContent = data.detected_key || 'No detectada';
+                }
+                
+                // Parse key and set dropdowns
+                if (data.detected_key) {
+                    const parts = data.detected_key.split(' ');
+                    if (parts.length >= 1) {
+                        document.getElementById('analyzeRootNote').value = parts[0];
+                        if (parts[1] === 'major') {
+                            document.getElementById('analyzeScaleType').value = 'major';
+                        } else if (parts[1] === 'minor' || parts[1] === 'natural_minor') {
+                            document.getElementById('analyzeScaleType').value = 'natural_minor';
+                        }
+                    }
+                }
+                
+                currentNotes = data.notes || [];
+                renderNotesTable();
+                renderPianoRoll();
+            } else {
+                noSession.classList.remove('hidden');
+                withSession.classList.add('hidden');
+            }
+        }
+        
+        function renderNotesTable() {
+            const tbody = document.getElementById('notesTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = currentNotes.map((note, i) => `
+                <tr style="border-bottom: 1px solid var(--border); ${selectedNoteIndex === i ? 'background: rgba(99, 102, 241, 0.2);' : ''}" 
+                    onclick="selectNoteFromTable(${i})">
+                    <td style="padding: 0.5rem;">${i + 1}</td>
+                    <td style="padding: 0.5rem; color: var(--accent); font-weight: 500;">${note.note_name}</td>
+                    <td style="padding: 0.5rem;">${note.start_time.toFixed(2)}s</td>
+                    <td style="padding: 0.5rem;">${note.duration.toFixed(2)}s</td>
+                    <td style="padding: 0.5rem;">${note.velocity}</td>
+                    <td style="padding: 0.5rem;">${(note.confidence * 100).toFixed(0)}%</td>
+                </tr>
+            `).join('');
+        }
+        
+        function selectNoteFromTable(index) {
+            selectedNoteIndex = index;
+            renderNotesTable();
+            renderPianoRoll();
+        }
+        
+        // ========== PLAYBACK (Reproducción de notas) ==========
+        let playbackContext = null;
+        let playbackScheduledNotes = [];
+        let playbackStartTime = 0;
+        let playbackAnimationFrame = null;
+        let isPlaying = false;
+        
+        function midiToFrequency(midi) {
+            return 440 * Math.pow(2, (midi - 69) / 12);
+        }
+        
+        async function playDetectedNotes() {
+            if (!currentNotes || currentNotes.length === 0) {
+                setStatus('No hay notas para reproducir');
+                return;
+            }
+            
+            // Stop any current playback
+            stopPlayback();
+            
+            // Create audio context
+            playbackContext = new (window.AudioContext || window.webkitAudioContext)();
+            isPlaying = true;
+            
+            // UI update
+            document.getElementById('playNotesBtn').style.display = 'none';
+            document.getElementById('stopNotesBtn').style.display = 'inline-block';
+            
+            // Sort notes by start time
+            const sortedNotes = [...currentNotes].sort((a, b) => a.start_time - b.start_time);
+            
+            playbackStartTime = playbackContext.currentTime;
+            const progressEl = document.getElementById('playbackProgress');
+            
+            // Schedule all notes
+            sortedNotes.forEach((note, index) => {
+                const startTime = playbackContext.currentTime + note.start_time;
+                const duration = Math.max(note.duration, 0.1);
+                
+                // Create oscillator for each note
+                const osc = playbackContext.createOscillator();
+                const gainNode = playbackContext.createGain();
+                
+                osc.type = 'triangle'; // Nice mellow sound
+                osc.frequency.value = midiToFrequency(note.midi_note);
+                
+                // ADSR envelope
+                const attackTime = 0.02;
+                const decayTime = 0.1;
+                const sustainLevel = 0.6;
+                const releaseTime = 0.1;
+                
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, startTime + attackTime);
+                gainNode.gain.linearRampToValueAtTime(0.3 * sustainLevel, startTime + attackTime + decayTime);
+                gainNode.gain.setValueAtTime(0.3 * sustainLevel, startTime + duration - releaseTime);
+                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+                
+                osc.connect(gainNode);
+                gainNode.connect(playbackContext.destination);
+                
+                osc.start(startTime);
+                osc.stop(startTime + duration + 0.01);
+                
+                playbackScheduledNotes.push({ osc, gainNode, note, startTime, endTime: startTime + duration });
+            });
+            
+            // Calculate total duration
+            const lastNote = sortedNotes[sortedNotes.length - 1];
+            const totalDuration = lastNote.start_time + lastNote.duration;
+            
+            // Update progress
+            function updateProgress() {
+                if (!isPlaying) return;
+                
+                const elapsed = playbackContext.currentTime - playbackStartTime;
+                const percent = Math.min(100, (elapsed / totalDuration) * 100);
+                progressEl.textContent = `${elapsed.toFixed(1)}s / ${totalDuration.toFixed(1)}s`;
+                
+                // Highlight current note in piano roll
+                highlightPlayingNote(elapsed);
+                
+                if (elapsed < totalDuration) {
+                    playbackAnimationFrame = requestAnimationFrame(updateProgress);
+                } else {
+                    // Playback finished
+                    setTimeout(() => stopPlayback(), 100);
+                }
+            }
+            
+            playbackAnimationFrame = requestAnimationFrame(updateProgress);
+            setStatus(`▶️ Reproduciendo ${currentNotes.length} notas...`);
+        }
+        
+        function highlightPlayingNote(currentTime) {
+            const canvas = document.getElementById('pianoRollCanvas');
+            if (!canvas) return;
+            
+            // Find notes currently playing
+            const playingNotes = currentNotes.filter(n => 
+                currentTime >= n.start_time && currentTime <= (n.start_time + n.duration)
+            );
+            
+            if (playingNotes.length > 0) {
+                // Just trigger a visual update - the renderPianoRoll will handle highlighting
+                // For now, we update the playhead position
+            }
+        }
+        
+        function stopPlayback() {
+            isPlaying = false;
+            
+            if (playbackAnimationFrame) {
+                cancelAnimationFrame(playbackAnimationFrame);
+                playbackAnimationFrame = null;
+            }
+            
+            // Stop all scheduled notes
+            playbackScheduledNotes.forEach(({ osc, gainNode }) => {
+                try {
+                    gainNode.gain.cancelScheduledValues(0);
+                    gainNode.gain.setValueAtTime(0, playbackContext?.currentTime || 0);
+                    osc.stop();
+                } catch (e) {
+                    // Already stopped
+                }
+            });
+            playbackScheduledNotes = [];
+            
+            if (playbackContext) {
+                playbackContext.close();
+                playbackContext = null;
+            }
+            
+            // UI update
+            const playBtn = document.getElementById('playNotesBtn');
+            const stopBtn = document.getElementById('stopNotesBtn');
+            const progressEl = document.getElementById('playbackProgress');
+            
+            if (playBtn) playBtn.style.display = 'inline-block';
+            if (stopBtn) stopBtn.style.display = 'none';
+            if (progressEl) progressEl.textContent = '';
+            
+            setStatus('⏹️ Reproducción detenida');
+        }
+        
+        // Play single note on click (for preview)
+        function playSingleNote(midiNote, duration = 0.3) {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.value = midiToFrequency(midiNote);
+            
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.start();
+            osc.stop(ctx.currentTime + duration);
+        }
+        
+        // Initialize tempo slider
+        document.addEventListener('DOMContentLoaded', () => {
+            const tempoSlider = document.getElementById('playbackTempo');
+            const tempoValue = document.getElementById('tempoValue');
+            if (tempoSlider && tempoValue) {
+                tempoSlider.addEventListener('input', () => {
+                    tempoValue.textContent = tempoSlider.value + ' BPM';
+                });
+            }
+        });
+
+        // ========== PIANO ROLL ==========
+        function renderPianoRoll() {
+            const canvas = document.getElementById('pianoRollCanvas');
+            if (!canvas || !currentNotes.length) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // Find note range
+            const midiNotes = currentNotes.map(n => n.midi_note);
+            const minMidi = Math.max(0, Math.min(...midiNotes) - 3);
+            const maxMidi = Math.min(127, Math.max(...midiNotes) + 3);
+            const midiRange = maxMidi - minMidi + 1;
+            
+            // Find time range
+            const maxTime = Math.max(...currentNotes.map(n => n.start_time + n.duration)) * pianoRollZoom;
+            const timeScale = w / Math.max(maxTime, 1);
+            
+            const noteHeight = h / midiRange;
+            
+            // Draw grid
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+            for (let i = 0; i <= midiRange; i++) {
+                const midi = minMidi + i;
+                const isBlack = [1, 3, 6, 8, 10].includes(midi % 12);
+                if (isBlack) {
+                    ctx.fillRect(0, h - (i + 1) * noteHeight, w, noteHeight);
+                }
+            }
+            
+            // Draw horizontal lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= midiRange; i++) {
+                const y = h - i * noteHeight;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+            
+            // Draw vertical time markers
+            const timeStep = 0.5; // Every 0.5 seconds
+            for (let t = 0; t <= maxTime / pianoRollZoom; t += timeStep) {
+                const x = t * timeScale * pianoRollZoom;
+                ctx.strokeStyle = t % 1 === 0 ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)';
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+                
+                if (t % 1 === 0) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.font = '10px sans-serif';
+                    ctx.fillText(t.toFixed(0) + 's', x + 2, 12);
+                }
+            }
+            
+            // Draw notes
+            currentNotes.forEach((note, i) => {
+                const x = note.start_time * timeScale * pianoRollZoom;
+                const noteWidth = Math.max(note.duration * timeScale * pianoRollZoom, 10);
+                const y = h - (note.midi_note - minMidi + 1) * noteHeight;
+                
+                const isSelected = selectedNoteIndex === i;
+                const isBeingDragged = isSelected && (isDragging || isResizing);
+                
+                // Note rectangle with shadow for depth
+                if (isSelected) {
+                    ctx.shadowColor = 'rgba(34, 197, 94, 0.5)';
+                    ctx.shadowBlur = 8;
+                }
+                
+                ctx.fillStyle = isSelected ? '#22c55e' : '#6366f1';
+                ctx.strokeStyle = isSelected ? 'white' : '#818cf8';
+                ctx.lineWidth = isSelected ? 2 : 1;
+                
+                ctx.beginPath();
+                ctx.roundRect(x, y, noteWidth, noteHeight - 2, 3);
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                
+                // Resize handle on right edge (visual indicator)
+                if (isSelected) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.fillRect(x + noteWidth - 6, y + 2, 4, noteHeight - 6);
+                }
+                
+                // Note name
+                if (noteWidth > 30) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.fillText(note.note_name, x + 4, y + noteHeight - 5);
+                }
+            });
+            
+            // Draw instruction hint at bottom
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.font = '11px sans-serif';
+            ctx.fillText('🖱️ Arrastrar: mover nota | Borde derecho: cambiar duración | Doble-click: eliminar', 50, h - 5);
+            
+            // Draw piano keys on left
+            const keyWidth = 40;
+            ctx.fillStyle = 'var(--bg-card)';
+            ctx.fillRect(0, 0, keyWidth, h);
+            
+            for (let i = 0; i < midiRange; i++) {
+                const midi = minMidi + i;
+                const y = h - (i + 1) * noteHeight;
+                const isBlack = [1, 3, 6, 8, 10].includes(midi % 12);
+                
+                ctx.fillStyle = isBlack ? '#333' : '#fff';
+                ctx.fillRect(0, y, keyWidth - 5, noteHeight - 1);
+                
+                ctx.fillStyle = isBlack ? '#999' : '#333';
+                ctx.font = '9px sans-serif';
+                const noteName = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'][midi % 12];
+                const octave = Math.floor(midi / 12) - 1;
+                ctx.fillText(noteName + octave, 3, y + noteHeight - 3);
+            }
+        }
+        
+        // Double-click to delete note
+        document.getElementById('pianoRollCanvas')?.addEventListener('dblclick', (e) => {
+            if (selectedNoteIndex >= 0) {
+                pianoRollDeleteSelected();
+            }
+        });
+        
+        function pianoRollZoomIn() {
+            pianoRollZoom = Math.min(4, pianoRollZoom * 1.5);
+            console.log('Zoom in:', pianoRollZoom);
+            setStatus(`🔍 Zoom: ${Math.round(pianoRollZoom * 100)}%`);
+            renderPianoRoll();
+        }
+        
+        function pianoRollZoomOut() {
+            pianoRollZoom = Math.max(0.25, pianoRollZoom / 1.5);
+            console.log('Zoom out:', pianoRollZoom);
+            setStatus(`🔍 Zoom: ${Math.round(pianoRollZoom * 100)}%`);
+            renderPianoRoll();
+        }
+        
+        function pianoRollAddNote() {
+            // Add a new note after the last one
+            const lastNote = currentNotes[currentNotes.length - 1];
+            const newNote = {
+                midi_note: lastNote ? lastNote.midi_note : 60,
+                note_name: lastNote ? lastNote.note_name : 'C4',
+                start_time: lastNote ? lastNote.start_time + lastNote.duration + 0.1 : 0,
+                duration: 0.5,
+                velocity: 100,
+                confidence: 1.0,
+                original_hz: null,
+                quantized_hz: null
+            };
+            
+            notesHistory.push(JSON.stringify(currentNotes));
+            currentNotes.push(newNote);
+            selectedNoteIndex = currentNotes.length - 1;
+            renderNotesTable();
+            renderPianoRoll();
+            setStatus('Nota añadida');
+        }
+        
+        function pianoRollDeleteSelected() {
+            if (selectedNoteIndex >= 0 && selectedNoteIndex < currentNotes.length) {
+                notesHistory.push(JSON.stringify(currentNotes));
+                currentNotes.splice(selectedNoteIndex, 1);
+                selectedNoteIndex = -1;
+                renderNotesTable();
+                renderPianoRoll();
+                setStatus('Nota eliminada');
+            }
+        }
+        
+        function undoPianoRoll() {
+            if (notesHistory.length > 0) {
+                currentNotes = JSON.parse(notesHistory.pop());
+                selectedNoteIndex = -1;
+                renderNotesTable();
+                renderPianoRoll();
+                setStatus('Cambio deshecho');
+            }
+        }
+        
+        async function savePianoRollChanges() {
+            if (!currentSessionId) return;
+            
+            setStatus('Guardando cambios...', true);
+            
+            try {
+                const res = await fetch(`/api/sessions/${currentSessionId}/notes`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ notes: currentNotes })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    setStatus('✓ Cambios guardados');
+                    window.currentSessionData.notes = currentNotes;
+                } else {
+                    setStatus('Error: ' + (data.error || 'No se pudo guardar'));
+                }
+            } catch (e) {
+                setStatus('Error: ' + e.message);
+            }
+        }
+        
+        async function reanalyzeFromAnalyzeTab() {
+            if (!currentSessionId) return;
+            
+            const rootNote = document.getElementById('analyzeRootNote').value;
+            const scaleType = document.getElementById('analyzeScaleType').value;
+            const scaleNames = {
+                'major': 'Mayor',
+                'natural_minor': 'Menor',
+                'pentatonic_major': 'Pentatónica Mayor',
+                'pentatonic_minor': 'Pentatónica Menor',
+                'blues': 'Blues',
+                'chromatic': 'Cromática'
+            };
+            const scaleDisplayName = scaleNames[scaleType] || scaleType;
+            
+            setStatus(`🔄 Aplicando corrección: ${rootNote} ${scaleDisplayName}...`, true);
+            
+            try {
+                const res = await fetch(`/api/sessions/${currentSessionId}/reanalyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        root_note: rootNote,
+                        scale_type: scaleType
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    setStatus('Error: ' + data.error);
+                    showTonalityResult(false, data.error);
+                    return;
+                }
+                
+                // Update local data
+                currentNotes = data.notes;
+                window.currentSessionData.notes = data.notes;
+                window.currentSessionData.detected_key = data.detected_key;
+                
+                document.getElementById('analyzeKey').textContent = data.detected_key;
+                document.getElementById('analyzeNotesCount').textContent = data.notes_count;
+                
+                renderNotesTable();
+                renderPianoRoll();
+                
+                const msg = `✅ ¡Listo! ${data.notes_count} notas ajustadas a ${rootNote} ${scaleDisplayName}. El Piano Roll ya está actualizado.`;
+                setStatus(msg);
+                showTonalityResult(true, msg);
+                
+            } catch (e) {
+                setStatus('Error: ' + e.message);
+                showTonalityResult(false, e.message);
+            }
+        }
+        
+        function showTonalityResult(success, message) {
+            const el = document.getElementById('tonalityCorrectionResult');
+            if (!el) return;
+            
+            el.style.display = 'block';
+            el.style.background = success ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+            el.style.borderLeft = success ? '3px solid var(--success)' : '3px solid var(--error)';
+            el.innerHTML = `<span style="font-size: 0.8rem;">${message}</span>`;
+            
+            if (success) {
+                setTimeout(() => { el.style.display = 'none'; }, 5000);
+            }
+        }
+        
+        async function exportMidiFromAnalyze() {
+            if (!currentSessionId) return;
+            
+            // Trigger synthesis to generate MIDI, then download
+            setStatus('Generando MIDI...', true);
+            
+            try {
+                const res = await fetch('/api/synthesize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        instrument_id: 'synth_lead'
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.midi_file) {
+                    window.location.href = `/api/sessions/${currentSessionId}/audio/${data.midi_file}`;
+                    setStatus('✓ MIDI descargado');
+                } else {
+                    setStatus('Error al generar MIDI');
+                }
+            } catch (e) {
+                setStatus('Error: ' + e.message);
+            }
+        }
+        
+        function loadAnotherSession() {
+            switchTab('sessions');
+        }
+
+        // ========== CALIBRATION ==========
+        async function updateCalibrateTab() {
+            try {
+                // Get calibration status
+                const res = await fetch('/api/calibration/status');
+                const stats = await res.json();
+                
+                // Update UI
+                document.getElementById('calExamples').textContent = stats.num_examples || 0;
+                document.getElementById('calPitchOffset').textContent = (stats.global_pitch_offset_cents || 0).toFixed(1) + '¢';
+                document.getElementById('calTimingOffset').textContent = (stats.global_timing_offset_ms || 0).toFixed(1) + 'ms';
+                
+                const badge = document.getElementById('calibrationBadge');
+                if (stats.is_calibrated) {
+                    badge.textContent = 'Calibrado ✓';
+                    badge.style.background = 'var(--success)';
+                    badge.style.color = 'white';
+                } else {
+                    badge.textContent = 'No calibrado';
+                    badge.style.background = 'var(--bg-tertiary)';
+                    badge.style.color = 'var(--text-secondary)';
+                }
+                
+                // Enable/disable buttons based on current session
+                const hasSession = currentSessionId && window.currentSessionData;
+                document.getElementById('saveExampleBtn').disabled = !hasSession;
+                document.getElementById('applyCalBtn').disabled = !hasSession || !stats.is_calibrated;
+                
+                // Load examples list
+                await loadCalibrationExamples();
+                
+            } catch (e) {
+                console.error('Error loading calibration:', e);
+            }
+        }
+        
+        async function loadCalibrationExamples() {
+            try {
+                const res = await fetch('/api/calibration/examples');
+                const examples = await res.json();
+                
+                const container = document.getElementById('calibrationExamples');
+                
+                if (!examples.length) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="padding: 2rem;">
+                            <p style="color: var(--text-secondary);">No hay ejemplos aún. Grabá y corregí una melodía para comenzar.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = examples.map(ex => `
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-bottom: 1px solid var(--border);">
+                        <div style="font-size: 1.25rem;">🎵</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;">${ex.id}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                                ${ex.num_notes} notas • ${ex.duration.toFixed(1)}s
+                            </div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.8rem;">
+                            <div style="color: ${ex.pitch_offset > 0 ? 'var(--warning)' : ex.pitch_offset < 0 ? 'var(--accent)' : 'var(--text-secondary)'}">
+                                ${ex.pitch_offset > 0 ? '+' : ''}${ex.pitch_offset.toFixed(0)}¢
+                            </div>
+                            <div style="color: var(--text-secondary);">${ex.timing_offset.toFixed(0)}ms</div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (e) {
+                console.error('Error loading examples:', e);
+            }
+        }
+        
+        async function saveCurrentAsExample() {
+            if (!currentSessionId) {
+                setStatus('Error: No hay sesión activa');
+                return;
+            }
+            
+            setStatus('Guardando ejemplo de calibración...', true);
+            
+            try {
+                const res = await fetch('/api/calibration/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: currentSessionId })
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    setStatus('Error: ' + data.error);
+                    return;
+                }
+                
+                setStatus(`✓ Ejemplo guardado! Offset: ${data.pitch_offset_cents.toFixed(0)}¢`);
+                updateCalibrateTab();
+                
+            } catch (e) {
+                setStatus('Error: ' + e.message);
+            }
+        }
+        
+        async function applyCalibrationToSession() {
+            if (!currentSessionId) {
+                setStatus('Error: No hay sesión activa');
+                return;
+            }
+            
+            setStatus('Aplicando calibración...', true);
+            
+            try {
+                const res = await fetch('/api/calibration/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: currentSessionId })
+                });
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    setStatus('Error: ' + data.error);
+                    return;
+                }
+                
+                // Update local data
+                window.currentSessionData.notes = data.notes;
+                currentNotes = data.notes;
+                
+                setStatus(`✓ Calibración aplicada a ${data.notes_count} notas`);
+                
+                // If we're on analyze tab, refresh
+                if (document.getElementById('tab-analyze').classList.contains('active')) {
+                    renderNotesTable();
+                    renderPianoRoll();
+                }
+                
+            } catch (e) {
+                setStatus('Error: ' + e.message);
+            }
+        }
+        
+        async function resetCalibration() {
+            if (!confirm('¿Estás seguro? Esto eliminará todos los datos de calibración aprendidos.')) {
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/calibration/reset', { method: 'POST' });
+                const data = await res.json();
+                
+                if (data.success) {
+                    setStatus('Calibración reseteada');
+                    updateCalibrateTab();
+                }
+            } catch (e) {
+                setStatus('Error: ' + e.message);
+            }
+        }
+        
+        async function saveAsCalibrationExample() {
+            // Wrapper for saving from Analyze tab
+            await saveCurrentAsExample();
+        }
+        
+        // Update playReferenceNote to accept element ID
+        function playReferenceNote(selectId = 'editRootNote') {
+            const note = document.getElementById(selectId).value;
+            const freq = NOTE_FREQUENCIES[note];
+            playTone(freq, 2.0);
+            setStatus(`🔊 Nota: ${note} (${freq.toFixed(0)} Hz)`);
+        }
+        
+        function playReferenceScale(rootSelectId = 'editRootNote', scaleSelectId = 'editScaleType') {
+            const note = document.getElementById(rootSelectId).value;
+            const scaleType = document.getElementById(scaleSelectId).value;
+            const baseFreq = NOTE_FREQUENCIES[note];
+            const intervals = SCALE_INTERVALS[scaleType] || SCALE_INTERVALS['major'];
+
+            setStatus(`🎹 Escala: ${note} ${scaleType}`);
+
+            intervals.forEach((semitones, i) => {
+                setTimeout(() => {
+                    const freq = baseFreq * Math.pow(2, semitones / 12);
+                    playTone(freq, 0.3);
+                }, i * 400);
+            });
         }
     </script>
 

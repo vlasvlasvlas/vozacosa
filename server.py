@@ -22,6 +22,7 @@ from vozacosa.exporter import Exporter
 from vozacosa.models import QuantizationConfig, ExportConfig, Note, NoteType
 from vozacosa.scales import SCALES, SCALE_INTERVALS, MIDI_TO_NOTE, midi_to_note_name, NOTE_TO_MIDI
 from vozacosa.session import SessionManager, detect_key, DetectedNote, logger
+from vozacosa.calibration import calibration_manager
 
 app = Flask(__name__, static_folder='web', static_url_path='')
 CORS(app)
@@ -29,15 +30,38 @@ CORS(app)
 # Global instances
 session_manager = SessionManager()
 instrument_manager = InstrumentManager('instruments')
-analyzer = None  # Lazy load to avoid TF loading on startup
 
+# Cache of analyzers by model capacity
+_analyzers = {}
 
-def get_analyzer():
-    global analyzer
-    if analyzer is None:
-        # Use 'tiny' for faster CPU analysis (medium is too slow without GPU)
-        analyzer = PitchAnalyzer(model_capacity='tiny')
-    return analyzer
+def get_analyzer(model_capacity: str = 'medium'):
+    """
+    Get or create a PitchAnalyzer with the specified CREPE model.
+    
+    Models:
+    - 'tiny': 5K params, fastest, least accurate
+    - 'small': 20K params, fast
+    - 'medium': 80K params, balanced (default)
+    - 'large': 320K params, accurate
+    - 'full': 1.3M params, SOTA, most accurate but slowest
+    """
+    global _analyzers
+    
+    # Validate model capacity
+    valid_models = ['tiny', 'small', 'medium', 'large', 'full']
+    if model_capacity not in valid_models:
+        model_capacity = 'medium'
+    
+    if model_capacity not in _analyzers:
+        print(f"🧠 Loading CREPE model: {model_capacity}")
+        _analyzers[model_capacity] = PitchAnalyzer(
+            model_capacity=model_capacity,
+            step_size=10,  # 10ms steps for precise timing
+            confidence_threshold=0.25,  # Bajo para capturar notas sutiles
+            min_note_duration=0.05  # 50ms minimum note
+        )
+    
+    return _analyzers[model_capacity]
 
 
 @app.route('/')
@@ -121,8 +145,9 @@ def analyze_audio():
     audio_file = request.files['audio']
     scale = request.form.get('scale', 'auto')
     tolerance = int(request.form.get('tolerance', 25))
+    crepe_model = request.form.get('crepe_model', 'medium')
     
-    print(f"📁 ANALYZE: Got file, scale={scale}, tolerance={tolerance}")
+    print(f"📁 ANALYZE: Got file, scale={scale}, tolerance={tolerance}, model={crepe_model}")
     
     # Save to temp file
     with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
@@ -159,8 +184,8 @@ def analyze_audio():
         )
         
         # Analyze with CREPE
-        print(f"🧠 ANALYZE: Starting CREPE (this may take a moment)...")
-        result = get_analyzer().analyze(recording, quant_config)
+        print(f"🧠 ANALYZE: Starting CREPE with model '{crepe_model}' (this may take a moment)...")
+        result = get_analyzer(crepe_model).analyze(recording, quant_config)
         print(f"✓ ANALYZE: CREPE done! Found {len(result.notes)} notes ({time.time() - start_time:.2f}s)")
         
         if not result.notes:
@@ -390,6 +415,50 @@ def get_audio_file(session_id, filename):
     return send_from_directory(session_dir, filename)
 
 
+@app.route('/api/sessions/<session_id>/notes', methods=['PUT'])
+def update_session_notes(session_id):
+    """
+    Update notes for a session (from Piano Roll editor).
+    Expects JSON: {notes: [{midi_note, note_name, start_time, duration, velocity, ...}, ...]}
+    """
+    try:
+        data = request.json
+        notes = data.get('notes', [])
+        
+        session = session_manager.load_session(session_id)
+        if not session:
+            return jsonify({'error': 'Session not found'}), 404
+        
+        # Update session notes
+        session.detected_notes = []
+        for n in notes:
+            session.detected_notes.append(DetectedNote(
+                midi_note=n.get('midi_note', 60),
+                note_name=n.get('note_name', 'C4'),
+                start_time=n.get('start_time', 0),
+                duration=n.get('duration', 0.5),
+                velocity=n.get('velocity', 100),
+                confidence=n.get('confidence', 1.0),
+                original_hz=n.get('original_hz'),
+                quantized_hz=n.get('quantized_hz'),
+                cents_deviation=n.get('cents_deviation', 0)
+            ))
+        
+        session_manager.current_session = session
+        session_manager.save_session()
+        
+        return jsonify({
+            'success': True,
+            'notes_count': len(session.detected_notes)
+        })
+        
+    except Exception as e:
+        import traceback
+        error_msg = traceback.format_exc()
+        print(f"❌ ERROR IN /notes PUT:\n{error_msg}")
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/output/<path:filename>')
 def get_output_file(filename):
     """Serve files from output directory (for previews)"""
@@ -452,3 +521,166 @@ if __name__ == '__main__':
     webbrowser.open('http://localhost:5001')
     
     app.run(debug=True, port=5001)
+
+
+# ========== CALIBRATION ENDPOINTS ==========
+
+@app.route('/api/calibration/status')
+def get_calibration_status():
+    """Get current calibration profile status"""
+    stats = calibration_manager.get_profile_stats()
+    return jsonify(stats)
+
+
+@app.route('/api/calibration/examples')
+def list_calibration_examples():
+    """List all calibration examples"""
+    examples = calibration_manager.list_examples()
+    return jsonify(examples)
+
+
+@app.route('/api/calibration/add', methods=['POST'])
+def add_calibration_example():
+    """
+    Add a calibration example from a session.
+    Uses the original detected notes and user-corrected notes.
+    """
+    try:
+        data = request.json
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return jsonify({'error': 'session_id required'}), 400
+        
+        session = session_manager.load_session(session_id)
+        if not session:
+            return jsonify({'error': 'Session not found'}), 404
+        
+        # Get original and corrected notes from session
+        # The corrected notes are the current detected_notes (after user edits)
+        corrected_notes = [
+            {
+                'midi_note': n.midi_note,
+                'note_name': n.note_name,
+                'start_time': n.start_time,
+                'duration': n.duration,
+                'velocity': n.velocity,
+                'confidence': n.confidence,
+                'original_hz': n.original_hz
+            }
+            for n in session.detected_notes
+        ]
+        
+        # For original notes, we need the original_hz to recalculate
+        # Since we don't store "pre-correction" notes separately,
+        # we'll use the original_hz to estimate original MIDI
+        from vozacosa.scales import hz_to_midi, midi_to_note_name
+        original_notes = []
+        for n in session.detected_notes:
+            if n.original_hz:
+                orig_midi = round(hz_to_midi(n.original_hz))
+                original_notes.append({
+                    'midi_note': orig_midi,
+                    'note_name': midi_to_note_name(orig_midi),
+                    'start_time': n.start_time,
+                    'duration': n.duration,
+                    'velocity': n.velocity,
+                    'confidence': n.confidence,
+                    'original_hz': n.original_hz
+                })
+        
+        if not original_notes:
+            return jsonify({'error': 'No original pitch data in session'}), 400
+        
+        # Add calibration example
+        example = calibration_manager.add_example(
+            audio_file=session.original_audio_file or '',
+            duration=session.input_duration,
+            original_notes=original_notes,
+            corrected_notes=corrected_notes,
+            scale_used=session.scale_name,
+            root_note=session.scale_root
+        )
+        
+        return jsonify({
+            'success': True,
+            'example_id': example.id,
+            'pitch_offset_cents': example.pitch_offset_cents,
+            'timing_offset_ms': example.timing_offset_ms,
+            'profile_stats': calibration_manager.get_profile_stats()
+        })
+        
+    except Exception as e:
+        import traceback
+        print(f"❌ ERROR adding calibration: {traceback.format_exc()}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/calibration/apply', methods=['POST'])
+def apply_calibration():
+    """
+    Apply calibration to a session's notes.
+    """
+    try:
+        data = request.json
+        session_id = data.get('session_id')
+        
+        session = session_manager.load_session(session_id)
+        if not session:
+            return jsonify({'error': 'Session not found'}), 404
+        
+        # Get current notes as dicts
+        notes = [
+            {
+                'midi_note': n.midi_note,
+                'note_name': n.note_name,
+                'start_time': n.start_time,
+                'duration': n.duration,
+                'velocity': n.velocity,
+                'confidence': n.confidence,
+                'original_hz': n.original_hz,
+                'quantized_hz': n.quantized_hz
+            }
+            for n in session.detected_notes
+        ]
+        
+        # Apply calibration
+        calibrated = calibration_manager.apply_calibration(notes)
+        
+        # Update session
+        session.detected_notes = [
+            DetectedNote(
+                midi_note=n['midi_note'],
+                note_name=n['note_name'],
+                start_time=n['start_time'],
+                duration=n['duration'],
+                velocity=n['velocity'],
+                confidence=n['confidence'],
+                original_hz=n.get('original_hz'),
+                quantized_hz=n.get('quantized_hz'),
+                cents_deviation=0
+            )
+            for n in calibrated
+        ]
+        
+        session_manager.current_session = session
+        session_manager.save_session()
+        
+        return jsonify({
+            'success': True,
+            'notes': calibrated,
+            'notes_count': len(calibrated)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/calibration/reset', methods=['POST'])
+def reset_calibration():
+    """Reset calibration to defaults"""
+    calibration_manager.reset_calibration()
+    return jsonify({
+        'success': True,
+        'profile_stats': calibration_manager.get_profile_stats()
+    })

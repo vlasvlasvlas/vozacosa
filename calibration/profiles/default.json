@@ -1,0 +1,12 @@
+{
+  "id": "default",
+  "created_at": "2026-01-23T23:15:46.111345",
+  "updated_at": "2026-01-23T23:15:46.111347",
+  "global_pitch_offset_cents": 0.0,
+  "global_timing_offset_ms": 0.0,
+  "pitch_offset_by_octave": {},
+  "min_confidence_learned": 0.35,
+  "num_examples": 0,
+  "total_notes_corrected": 0,
+  "example_ids": []
+}

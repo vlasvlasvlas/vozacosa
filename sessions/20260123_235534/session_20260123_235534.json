@@ -1,0 +1,48 @@
+{
+  "id": "20260123_235534",
+  "created_at": "2026-01-23T23:55:34.132821",
+  "input_type": "upload",
+  "input_file": null,
+  "input_duration": 6.786666666666667,
+  "input_sample_rate": 22050,
+  "scale_name": null,
+  "scale_root": null,
+  "scale_detected": false,
+  "tolerance_cents": 25,
+  "detected_notes": [
+    {
+      "midi_note": 49,
+      "note_name": "C#3",
+      "start_time": 0.86,
+      "duration": 2.6300000000000003,
+      "velocity": 65,
+      "confidence": 0.7403310537338257,
+      "original_hz": 137.58955158110268,
+      "quantized_hz": 138.59131548843604,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 47,
+      "note_name": "B2",
+      "start_time": 3.57,
+      "duration": 3.2100000000000004,
+      "velocity": 63,
+      "confidence": 0.6654507517814636,
+      "original_hz": 124.32732460407372,
+      "quantized_hz": 123.47082531403103,
+      "cents_deviation": 0
+    }
+  ],
+  "detected_tempo": 92.28515625,
+  "is_percussive": false,
+  "detected_key": null,
+  "output_dir": "sessions/20260123_235534",
+  "original_audio_file": "sessions/20260123_235534/original.wav",
+  "midi_file": null,
+  "synth_wav_file": null,
+  "synth_mp3_file": null,
+  "instrument_id": null,
+  "instrument_name": null,
+  "steps": [],
+  "status": "analyzed"
+}

@@ -1,0 +1,59 @@
+{
+  "id": "20260123_234701",
+  "created_at": "2026-01-23T23:47:01.842128",
+  "input_type": "upload",
+  "input_file": null,
+  "input_duration": 5.088027210884354,
+  "input_sample_rate": 22050,
+  "scale_name": null,
+  "scale_root": null,
+  "scale_detected": true,
+  "tolerance_cents": 25,
+  "detected_notes": [
+    {
+      "midi_note": 51,
+      "note_name": "D#3",
+      "start_time": 0.86,
+      "duration": 1.6,
+      "velocity": 68,
+      "confidence": 0.7110760807991028,
+      "original_hz": 154.59930462382786,
+      "quantized_hz": 155.56349186104046,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 60,
+      "note_name": "C4",
+      "start_time": 2.52,
+      "duration": 0.14000000000000012,
+      "velocity": 50,
+      "confidence": 0.2532437741756439,
+      "original_hz": 256.82594765982367,
+      "quantized_hz": 261.6255653005986,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 51,
+      "note_name": "D#3",
+      "start_time": 2.72,
+      "duration": 2.36,
+      "velocity": 84,
+      "confidence": 0.8002448081970215,
+      "original_hz": 152.31954719930076,
+      "quantized_hz": 155.56349186104046,
+      "cents_deviation": 0
+    }
+  ],
+  "detected_tempo": 135.99917763157896,
+  "is_percussive": false,
+  "detected_key": "D# major",
+  "output_dir": "sessions/20260123_234701",
+  "original_audio_file": "sessions/20260123_234701/original.wav",
+  "midi_file": "/Users/vladimirobellini/Documents/REPOS/vozacosa/sessions/20260123_234701/output.mid",
+  "synth_wav_file": "sessions/20260123_234701/synth_pluck.wav",
+  "synth_mp3_file": null,
+  "instrument_id": "pluck",
+  "instrument_name": "Pluck",
+  "steps": [],
+  "status": "completed"
+}
