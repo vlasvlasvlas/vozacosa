@@ -1,0 +1,103 @@
+{
+  "id": "20260123_210517",
+  "created_at": "2026-01-23T21:05:17.343869",
+  "input_type": "upload",
+  "input_file": null,
+  "input_duration": 5.1866666666666665,
+  "input_sample_rate": 22050,
+  "scale_name": null,
+  "scale_root": null,
+  "scale_detected": true,
+  "tolerance_cents": 25,
+  "detected_notes": [
+    {
+      "midi_note": 64,
+      "note_name": "E4",
+      "start_time": 1.31,
+      "duration": 0.050000000000000044,
+      "velocity": 82,
+      "confidence": 0.6480277180671692,
+      "original_hz": 332.921163017648,
+      "quantized_hz": 329.6275569128699,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 53,
+      "note_name": "F3",
+      "start_time": 1.39,
+      "duration": 0.4700000000000002,
+      "velocity": 102,
+      "confidence": 0.8083337545394897,
+      "original_hz": 177.26917298783803,
+      "quantized_hz": 174.61411571650194,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 53,
+      "note_name": "F3",
+      "start_time": 1.88,
+      "duration": 0.7800000000000002,
+      "velocity": 104,
+      "confidence": 0.8226140141487122,
+      "original_hz": 171.2331680028062,
+      "quantized_hz": 174.61411571650194,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 55,
+      "note_name": "G3",
+      "start_time": 2.68,
+      "duration": 0.46999999999999975,
+      "velocity": 111,
+      "confidence": 0.8752144575119019,
+      "original_hz": 194.04384861334302,
+      "quantized_hz": 195.99771799087463,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 58,
+      "note_name": "A#3",
+      "start_time": 3.17,
+      "duration": 0.48,
+      "velocity": 106,
+      "confidence": 0.8373128771781921,
+      "original_hz": 229.08914363552944,
+      "quantized_hz": 233.08188075904496,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 57,
+      "note_name": "A3",
+      "start_time": 3.69,
+      "duration": 0.8400000000000003,
+      "velocity": 100,
+      "confidence": 0.7894566059112549,
+      "original_hz": 216.94049354367277,
+      "quantized_hz": 220.0,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 52,
+      "note_name": "E3",
+      "start_time": 4.65,
+      "duration": 0.0699999999999994,
+      "velocity": 77,
+      "confidence": 0.6106522679328918,
+      "original_hz": 165.4193044344413,
+      "quantized_hz": 164.81377845643496,
+      "cents_deviation": 0
+    }
+  ],
+  "detected_tempo": 117.45383522727273,
+  "is_percussive": false,
+  "detected_key": "F major",
+  "output_dir": "sessions/20260123_210517",
+  "original_audio_file": "sessions/20260123_210517/original.wav",
+  "midi_file": null,
+  "synth_wav_file": null,
+  "synth_mp3_file": null,
+  "instrument_id": null,
+  "instrument_name": null,
+  "steps": [],
+  "status": "analyzed"
+}

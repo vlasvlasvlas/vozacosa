@@ -1,160 +1,111 @@
-# 🎤 VozACosa
+# 🎤 VOZ-A-COSA
 
 ```
-╦  ╦╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗╔═╗
-╚╗╔╝║ ║╔═╝╠═╣║  ║ ║╚═╗╠═╣
- ╚╝ ╚═╝╚═╝╩ ╩╚═╝╚═╝╚═╝╩ ╩
+╦  ╦╔═╗╔═╗   ╔═╗   ╔═╗╔═╗╔═╗╔═╗
+╚╗╔╝║ ║╔═╝───╠═╣───║  ║ ║╚═╗╠═╣
+ ╚╝ ╚═╝╚═╝   ╩ ╩   ╚═╝╚═╝╚═╝╩ ╩
 ```
 
-> **Voice → MIDI → Synth** | Convierte tu voz cantada a instrumentos sintetizados
+> **Voice → MIDI → Synth** | Transforma tu voz en instrumentos musicales con IA.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## ✨ ¿Qué es VozACosa?
+## ✨ ¿Qué es VOZ-A-COSA?
 
-VozACosa es una herramienta **SOTA** (State-of-the-Art) que:
+**VOZ-A-COSA** es una herramienta creativa que utiliza inteligencia artificial (SOTA) para convertir melodías cantadas, tarareadas o silbadas en música sintetizada de alta calidad.
 
-1. 🎤 **Graba** tu voz cantando, tarareando o haciendo sonidos
-2. 🎵 **Detecta** el pitch usando **CREPE** (deep learning CNN)
-3. 🎹 **Cuantiza** las notas a escalas musicales
-4. 🔊 **Sintetiza** con instrumentos personalizables
-5. 📦 **Exporta** a MIDI, WAV y MP3
+A diferencia de los conversores de audio tradicionales, utiliza **CREPE** (un modelo de deep learning) para una detección de pitch ultra-precisa, permitiendo capturar matices expresivos como vibrato y glissando.
 
-Similar a **Waves OVox** o **VocalSynth**, pero **100% Python** y **open source**.
+### 🌟 Novedades v1.0
+
+*   **GUI Moderna:** Interfaz web oscura, intuitiva y paso a paso.
+*   **Visualizador de Afinación:** Gráfico interactivo tipo "Piano Roll" para ver tu voz sobre la escala musical.
+*   **Corrección Post-Grabación:** ¿La IA se equivocó de escala? Escuchá referencias, ajustá la nota raíz y re-procesa al instante sin volver a grabar.
+*   **Gestión de Sesiones:** Graba múltiples tomas, guárdalas automáticamente, recupéralas o elimínalas cuando quieras.
+*   **Previews de Instrumentos:** Escuchá cómo suena cada sintetizador antes de aplicarlo.
 
 ---
 
-## 🚀 Instalación
+## 🚀 Flujo de Trabajo
+
+1.  **🎤 Grabar:**
+    *   **Modo Simple:** Afinación automática y filtro de ruido listos para usar.
+    *   **Modo Avanzado:** Control total sobre el umbral de ruido (gate) y la agresividad de la afinación (tune amount).
+2.  **🧠 Analizar & Ajustar:**
+    *   El sistema detecta las notas y la escala probable.
+    *   **Visualizá** tu curva de voz sobre la rejilla musical.
+    *   **Escuchá** tonos de referencia ("Do Mayor", "La Menor", etc.) para asegurar la armonía correcta.
+    *   **Re-procesá** si es necesario con un solo clic.
+3.  **🎹 Sintetizar:**
+    *   Elegí entre 8 instrumentos (Pianos, Bajos, Sínteis, Vientos).
+    *   ¡Exportá a **MIDI**, **WAV** y **MP3**!
+
+---
+
+## 🛠️ Instalación
 
 ### Requisitos del sistema
 
-```bash
-# macOS
-brew install fluidsynth portaudio
+Necesitarás `fluidsynth` y `portaudio` para el manejo de audio en tiempo real.
 
-# Linux
+**macOS:**
+```bash
+brew install fluidsynth portaudio
+```
+
+**Linux (Debian/Ubuntu):**
+```bash
 sudo apt install fluidsynth libportaudio2
 ```
 
-### Instalación Python
+### Instalación del proyecto
 
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/tu-usuario/vozacosa.git
 cd vozacosa
 
-# 2. Crear entorno virtual
+# 2. Crear entorno virtual (Recomendado)
 python3 -m venv venv
+source venv/bin/activate
 
-# 3. Activar entorno virtual
-source venv/bin/activate   # macOS/Linux
-# venv\Scripts\activate    # Windows
-
-# 4. Instalar dependencias
+# 3. Instalar dependencias
 pip install -r requirements.txt
 ```
 
-> ⚠️ **Importante:** Siempre activá el venv antes de usar VozACosa:
-> ```bash
-> source venv/bin/activate
-> ```
+---
+
+## 💻 Uso
+
+La forma recomendada de usar VOZ-A-COSA es a través de su interfaz web.
+
+```bash
+# Asegurate de tener el entorno activado
+source venv/bin/activate
+
+# Iniciar el servidor
+python server.py
+```
+
+El navegador se abrirá automáticamente en `http://localhost:5001`.
 
 ---
 
-## 💻 Uso Rápido
+## 🎹 Instrumentos Incluidos
 
-> Asegurate de tener el venv activado (`source venv/bin/activate`)
-
-### Grabar y convertir tu voz
-
-```bash
-python cli.py record
-```
-
-Te pedirá:
-1. **Escala** (major, minor, pentatonic, blues...)
-2. **Nota raíz** (C, D, E...)
-3. **Tolerancia** (0=estricto, 50=libre)
-
-Luego presiona ENTER para grabar y ENTER para detener.
-
-### Convertir un archivo de audio
-
-```bash
-python cli.py convert mi_canto.wav --scale pentatonic_major --root C
-```
-
-### Listar comandos disponibles
-
-```bash
-python cli.py --help
-```
-
----
-
-## 🎹 Instrumentos
-
-VozACosa incluye **8 instrumentos** pre-configurados:
-
-| Instrumento | Tipo | Sonido |
-|-------------|------|--------|
-| `synth_lead` | Wavetable | Lead synth 80s |
-| `synth_pad` | Wavetable | Pad atmosférico |
-| `bass_808` | Wavetable | Sub bass 808 |
-| `pluck` | Karplus-Strong | Cuerda punteada |
-| `piano_warm` | SoundFont | Piano acústico |
-| `strings_ensemble` | SoundFont | Cuerdas orquestales |
-| `flute` | SoundFont | Flauta traversa |
-| `organ_rock` | Additive | Hammond B3 |
-
-### Probar un instrumento
-
-```bash
-python cli.py test-instrument synth_lead --notes "C4,E4,G4,C5"
-```
-
-### Crear tus propios instrumentos
-
-📖 **[Guía de Creación de Sonidos](docs/SOUNDS.md)** - Aprende a definir instrumentos personalizados en JSON
-
----
-
-## 🎼 Escalas Soportadas
-
-```bash
-python cli.py scales
-```
-
-- **Mayores/Menores**: major, natural_minor, harmonic_minor, melodic_minor
-- **Pentatónicas**: pentatonic_major, pentatonic_minor
-- **Modos**: dorian, phrygian, lydian, mixolydian, locrian
-- **Otras**: blues, chromatic, whole_tone, diminished
-
----
-
-## 🔧 Arquitectura
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        VOZACOSA                              │
-├─────────────────┬───────────────────────────────────────────┤
-│  🎤 RECORDER    │  sounddevice (grabación tiempo real)      │
-├─────────────────┼───────────────────────────────────────────┤
-│  🔍 ANALYZER    │  CREPE (CNN pitch detection)              │
-│                 │  librosa (onset, tempo)                   │
-├─────────────────┼───────────────────────────────────────────┤
-│  🎼 QUANTIZER   │  15 escalas musicales                     │
-│                 │  Tolerancia configurable en cents         │
-├─────────────────┼───────────────────────────────────────────┤
-│  🎹 SYNTH       │  Wavetable, Karplus-Strong, FluidSynth    │
-│                 │  Instrumentos JSON extensibles            │
-├─────────────────┼───────────────────────────────────────────┤
-│  📦 EXPORTER    │  MIDI (pretty_midi), WAV, MP3             │
-└─────────────────┴───────────────────────────────────────────┘
-```
+| Instrumento | Categoría | Descripción |
+|-------------|-----------|-------------|
+| **Piano Cálido** | Acoustic | Piano suave ideal para acordes y melodías emotivas. |
+| **Synth Lead** | Electronic | Sintetizador ochentero penetrante para solos. |
+| **Bass 808** | Bass | Sub-bajo profundo estilo Trap/Hip-Hop. |
+| **Synth Pad** | Atmospheric | Sonido ambiental y espacial. |
+| **Pluck** | Plucked | Sonido percusivo tipo cuerda punteada. |
+| **Cuerdas** | Orchestral | Ensamble de violines y cellos. |
+| **Flauta** | Wind | Flauta dulce melódica. |
+| **Órgano Rock** | Keyboards | Clásico sonido Hammond B3 con distorsión. |
 
 ---
 
@@ -162,37 +113,36 @@ python cli.py scales
 
 ```
 vozacosa/
-├── vozacosa/                # Módulos core
-│   ├── models.py            # Dataclasses
-│   ├── scales.py            # Escalas musicales
-│   ├── recorder.py          # Grabación
-│   ├── analyzer.py          # CREPE pitch detection
-│   ├── synthesizer.py       # Síntesis básica
-│   ├── instruments.py       # Sistema de instrumentos JSON
-│   └── exporter.py          # Export MIDI/WAV/MP3
-├── instruments/
-│   ├── instruments.json     # Definiciones de instrumentos
-│   └── soundfonts/          # Archivos .sf2
-├── docs/
-│   └── SOUNDS.md            # Guía de creación de sonidos
-├── output/                  # Archivos exportados
-├── cli.py                   # Interfaz CLI
-└── requirements.txt
+├── app.py              # Versión CLI (Terminal)
+├── server.py           # Servidor Flask (Backend Web)
+├── web/                # Frontend
+│   └── index.html      # Aplicación Single Page (HTML/JS/CSS)
+├── vozacosa/           # Núcleo Python
+│   ├── analyzer.py     # Motor de detección (CREPE)
+│   ├── synthesizer.py  # Motores de audio
+│   ├── instruments.py  # Gestión de presets
+│   └── session.py      # Gestor de archivos y estado
+├── instruments/        # Definiciones JSON + SoundFonts (.sf2)
+├── sessions/           # 💾 Tus grabaciones se guardan aquí
+└── output/             # Exportaciones temporales
 ```
 
 ---
 
 ## 🤝 Contribuir
 
-¡Las contribuciones son bienvenidas! Podés:
+¡Tus ideas son bienvenidas!
 
-- 🎹 Agregar nuevos instrumentos en `instruments/instruments.json`
-- 🎵 Mejorar la detección de percusión
-- 🌐 Crear una interfaz web
-- 📝 Mejorar la documentación
+1.  Haz un Fork del proyecto.
+2.  Crea una rama (`git checkout -b feature/nueva-idea`).
+3.  Commit tus cambios (`git commit -m 'Agregué visualizador 3D'`).
+4.  Push a la rama (`git push origin feature/nueva-idea`).
+5.  Abre un Pull Request.
 
 ---
 
 ## 📄 Licencia
 
-MIT © 2024
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+
+© 2026 VOZ-A-COSA Team
