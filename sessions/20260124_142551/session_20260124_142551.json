@@ -1,0 +1,103 @@
+{
+  "id": "20260124_142551",
+  "created_at": "2026-01-24T14:25:51.568579",
+  "input_type": "upload",
+  "input_file": null,
+  "input_duration": 4.450702947845805,
+  "input_sample_rate": 22050,
+  "scale_name": null,
+  "scale_root": null,
+  "scale_detected": true,
+  "tolerance_cents": 25,
+  "detected_notes": [
+    {
+      "midi_note": 48,
+      "note_name": "C3",
+      "start_time": 0.6733786848072563,
+      "duration": 0.7198185941043083,
+      "velocity": 106,
+      "confidence": 0.8171707391738892,
+      "original_hz": 134.33447637488032,
+      "quantized_hz": 130.8127826502993,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 54,
+      "note_name": "F#3",
+      "start_time": 1.3931972789115645,
+      "duration": 0.20897959183673476,
+      "velocity": 111,
+      "confidence": 0.879285991191864,
+      "original_hz": 180.38591427635666,
+      "quantized_hz": 184.9972113558172,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 51,
+      "note_name": "D#3",
+      "start_time": 1.6021768707482993,
+      "duration": 0.48761904761904784,
+      "velocity": 110,
+      "confidence": 0.7235815525054932,
+      "original_hz": 151.8652040357853,
+      "quantized_hz": 155.56349186104046,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 48,
+      "note_name": "C3",
+      "start_time": 2.9024943310657596,
+      "duration": 0.25541950113378675,
+      "velocity": 105,
+      "confidence": 0.8337268829345703,
+      "original_hz": 131.88332688506895,
+      "quantized_hz": 130.8127826502993,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 49,
+      "note_name": "C#3",
+      "start_time": 3.1579138321995464,
+      "duration": 0.2321995464852611,
+      "velocity": 111,
+      "confidence": 0.8791730403900146,
+      "original_hz": 134.74407246848625,
+      "quantized_hz": 138.59131548843604,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 53,
+      "note_name": "F3",
+      "start_time": 3.3901133786848074,
+      "duration": 0.25541950113378675,
+      "velocity": 108,
+      "confidence": 0.853981077671051,
+      "original_hz": 176.0697616578166,
+      "quantized_hz": 174.61411571650194,
+      "cents_deviation": 0
+    },
+    {
+      "midi_note": 50,
+      "note_name": "D3",
+      "start_time": 3.645532879818594,
+      "duration": 0.41795918367346907,
+      "velocity": 105,
+      "confidence": 0.8288134932518005,
+      "original_hz": 150.11363598776887,
+      "quantized_hz": 146.8323839587038,
+      "cents_deviation": 0
+    }
+  ],
+  "detected_tempo": 123.046875,
+  "is_percussive": false,
+  "detected_key": "C minor",
+  "output_dir": "sessions/20260124_142551",
+  "original_audio_file": "sessions/20260124_142551/original.wav",
+  "midi_file": "/Users/vladimirobellini/Documents/REPOS/vozacosa/sessions/20260124_142551/output.mid",
+  "synth_wav_file": "sessions/20260124_142551/synth_bass_808.wav",
+  "synth_mp3_file": null,
+  "instrument_id": "bass_808",
+  "instrument_name": "Bass 808",
+  "steps": [],
+  "status": "completed"
+}
